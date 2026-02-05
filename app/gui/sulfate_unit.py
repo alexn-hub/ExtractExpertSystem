@@ -28,6 +28,7 @@ class SulfateUnit(QWidget):
 
         # 2. Создаем экран работы
         self.work_page = WorkScreen()
+        self.work_page.parent_unit = self  # Чтобы страница работы могла позвать метод возврата
 
         # Добавляем их в стэк
         self.stack.addWidget(self.input_page)  # индекс 0
@@ -37,8 +38,6 @@ class SulfateUnit(QWidget):
 
         # При нажатии "ОК" на экране ввода — запускаем расчет
         self.input_page.btn_start.clicked.connect(self.process_start_request)
-
-        self.work_page.btn_stop.clicked.connect(self.return_to_input)
 
     def return_to_input(self):
         self.work_page.stop_simulation()  # Обязательно гасим таймер

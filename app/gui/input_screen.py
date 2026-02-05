@@ -35,8 +35,13 @@ class InputScreen(QWidget):
         form_layout.addWidget(self.edit_batch_id, 1, 1)
 
         form_layout.addWidget(QLabel("Масса (кг):"), 2, 0)
-        self.edit_weight = QLineEdit("1050")
+        self.edit_weight = QLineEdit("0")
         form_layout.addWidget(self.edit_weight, 2, 1)
+
+
+        form_layout.addWidget(QLabel("Извлечение (%):"), 3, 0)
+        self.edit_extraction = QLineEdit("0.0")
+        form_layout.addWidget(self.edit_extraction, 3, 1)
 
         form_group.setLayout(form_layout)
         layout.addWidget(form_group)
@@ -55,12 +60,13 @@ class InputScreen(QWidget):
         for i, (name, key) in enumerate(elements):
             row, col = divmod(i, 2)
             chem_layout.addWidget(QLabel(f"{name}:"), row, col * 2)
-            edit = QLineEdit("1.5")  # Значение по умолчанию
+            edit = QLineEdit("0")  # Значение по умолчанию
             chem_layout.addWidget(edit, row, col * 2 + 1)
             self.inputs[key] = edit
 
         chem_group.setLayout(chem_layout)
         layout.addWidget(chem_group)
+
 
         # Кнопка ОК
         self.btn_start = QPushButton("ОК (Запустить расчет)")
@@ -83,7 +89,8 @@ class InputScreen(QWidget):
         data = {
             'sulfate_number': int(self.combo_sfr.currentText().split('-')[-1]),
             'batch_id': self.edit_batch_id.text(),
-            'sample_weight': float(self.edit_weight.text() or 0)
+            'sample_weight': float(self.edit_weight.text() or 0),
+            'extraction_percent': float(self.edit_extraction.text() or 0)
         }
         # Собираем химию
         for key, edit in self.inputs.items():

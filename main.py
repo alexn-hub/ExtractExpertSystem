@@ -1,37 +1,38 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QMessageBox, QTabWidget
 from app.core.database import DatabaseManager
 from app.core.recommender import ProcessRecommender
 from app.gui.input_screen import InputScreen
 from app.gui.work_screen import WorkScreen
+from app.gui.sulfate_unit import SulfateUnit
 
 # Добавляем путь к проекту в sys.path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("ExtractExpertSystem")
-        self.resize(1280, 900)
+        self.setWindowTitle("Extract Expert System")
+        self.setMinimumSize(1200, 800)
 
+        # Ресурсы
         self.db = DatabaseManager()
         self.recommender = ProcessRecommender(self.db)
 
-        self.stacked_widget = QStackedWidget()
-        self.setCentralWidget(self.stacked_widget)
+        # Создаем виджет вкладок
+        self.tabs = QTabWidget()
 
-        self.input_screen = InputScreen()
-        self.work_screen = WorkScreen()
+        # Создаем два независимых аппарата
+        # У каждого будет свой стэк экранов, свой реактор и свои графики
+        self.unit3 = SulfateUnit("СФР-3", self.recommender, self.db)
+        self.unit4 = SulfateUnit("СФР-4", self.recommender, self.db)
 
-        self.stacked_widget.addWidget(self.input_screen)
-        self.stacked_widget.addWidget(self.work_screen)
+        self.tabs.addTab(self.unit3, "СФР-3")
+        self.tabs.addTab(self.unit4, "СФР-4")
 
-        self.work_screen.btn_sfr3.clicked.connect(self.switch_to_sfr)
-        self.work_screen.btn_sfr4.clicked.connect(self.switch_to_sfr)
-        self.work_screen.btn_stop.clicked.connect(self.stop_process)
-
-        self.input_screen.btn_start.clicked.connect(self.handle_start_process)
+        self.setCentralWidget(self.tabs)
 
     def switch_to_sfr(self):
         sender = self.sender()

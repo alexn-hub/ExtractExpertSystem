@@ -144,3 +144,454 @@
 2026-02-05 13:43:06 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
 2026-02-05 13:43:06 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
 2026-02-05 13:43:06 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 14:21:14 - expert_system - INFO - База данных инициализирована
+2026-02-05 14:21:18 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 14:21:18 - expert_system.recommender - INFO - Входные данные: Масса=1050.0кг, Ni=1.5%, Pd=1.5%
+2026-02-05 14:21:18 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 14:21:18 - expert_system.recommender - DEBUG - Партия P-2024-001 отклонена: 4+ несовпадения (cu_percent, pt_percent, pd_percent, sio2_percent, c_percent)
+2026-02-05 14:21:18 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 14:21:18 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 14:21:18 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 14:21:18 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 14:21:18 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 4
+2026-02-05 14:21:18 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 0
+2026-02-05 14:21:18 - expert_system.recommender - ERROR - Подходящих партий не обнаружено!
+2026-02-05 14:22:24 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 14:22:24 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 14:22:24 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 14:22:24 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 14:22:24 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 14:22:24 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 14:22:24 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 14:22:24 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 14:22:24 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 14:22:24 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 14:22:24 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 14:24:18 - expert_system - INFO - База данных инициализирована
+2026-02-05 14:24:19 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 14:24:19 - expert_system.recommender - INFO - Входные данные: Масса=1050.0кг, Ni=1.5%, Pd=1.5%
+2026-02-05 14:24:19 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 14:24:19 - expert_system.recommender - DEBUG - Партия P-2024-001 отклонена: 4+ несовпадения (cu_percent, pt_percent, pd_percent, sio2_percent, c_percent)
+2026-02-05 14:24:19 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 14:24:19 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 14:24:19 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 14:24:19 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 14:24:19 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 4
+2026-02-05 14:24:19 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 0
+2026-02-05 14:24:19 - expert_system.recommender - ERROR - Подходящих партий не обнаружено!
+2026-02-05 14:24:49 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 14:24:49 - expert_system.recommender - INFO - Входные данные: Масса=1050.0кг, Ni=1.57%, Pd=33.62%
+2026-02-05 14:24:49 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 14:24:49 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 14:24:49 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 14:24:49 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 14:24:49 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 14:24:49 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 14:24:49 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 14:24:49 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 14:24:49 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 14:25:54 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 14:25:54 - expert_system.recommender - INFO - Входные данные: Масса=1109.98кг, Ni=2.2%, Pd=29.33%
+2026-02-05 14:25:54 - expert_system.recommender - DEBUG - Партия P-2024-003 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 14:25:54 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 14:25:54 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-05 14:25:54 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-05 14:25:54 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 14:25:54 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-004 (Извлечение: 90.27%)
+2026-02-05 14:25:54 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 14:57:11 - expert_system - INFO - База данных инициализирована
+2026-02-05 14:58:09 - expert_system - INFO - База данных инициализирована
+2026-02-05 15:00:16 - expert_system - INFO - База данных инициализирована
+2026-02-05 15:00:18 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 15:00:18 - expert_system.recommender - INFO - Входные данные: Масса=1050.0кг, Ni=1.5%, Pd=1.5%
+2026-02-05 15:00:18 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 15:00:18 - expert_system.recommender - DEBUG - Партия P-2024-001 отклонена: 4+ несовпадения (cu_percent, pt_percent, pd_percent, sio2_percent, c_percent)
+2026-02-05 15:00:18 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 15:00:18 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 15:00:18 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 15:00:18 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 15:00:18 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 4
+2026-02-05 15:00:18 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 0
+2026-02-05 15:00:18 - expert_system.recommender - ERROR - Подходящих партий не обнаружено!
+2026-02-05 15:00:21 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 15:00:21 - expert_system.recommender - INFO - Входные данные: Масса=1050.0кг, Ni=1.5%, Pd=1.5%
+2026-02-05 15:00:21 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 15:00:21 - expert_system.recommender - DEBUG - Партия P-2024-001 отклонена: 4+ несовпадения (cu_percent, pt_percent, pd_percent, sio2_percent, c_percent)
+2026-02-05 15:00:21 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 15:00:21 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 15:00:21 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 15:00:21 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 15:00:21 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 4
+2026-02-05 15:00:21 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 0
+2026-02-05 15:00:21 - expert_system.recommender - ERROR - Подходящих партий не обнаружено!
+2026-02-05 15:01:18 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 15:01:18 - expert_system.recommender - INFO - Входные данные: Масса=1159.45кг, Ni=2.69%, Pd=20.74%
+2026-02-05 15:01:18 - expert_system.recommender - DEBUG - Партия P-2024-004 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 15:01:18 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 15:01:18 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-05 15:01:18 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-05 15:01:18 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 15:01:18 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-003 (Извлечение: 81.8%)
+2026-02-05 15:01:18 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 15:26:39 - expert_system - INFO - База данных инициализирована
+2026-02-05 15:27:42 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 15:27:42 - expert_system.recommender - INFO - Входные данные: Масса=1159.45кг, Ni=2.69%, Pd=20.74%
+2026-02-05 15:27:42 - expert_system.recommender - DEBUG - Партия P-2024-004 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 15:27:42 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 15:27:42 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-05 15:27:42 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-05 15:27:42 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 15:27:42 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-003 (Извлечение: 81.8%)
+2026-02-05 15:27:42 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 15:28:04 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 15:28:04 - expert_system.recommender - INFO - Входные данные: Масса=1159.45кг, Ni=2.69%, Pd=20.74%
+2026-02-05 15:28:04 - expert_system.recommender - DEBUG - Партия P-2024-004 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 15:28:04 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 15:28:04 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-05 15:28:04 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-05 15:28:04 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 15:28:04 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-003 (Извлечение: 81.8%)
+2026-02-05 15:28:04 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 15:28:40 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 15:28:40 - expert_system.recommender - INFO - Входные данные: Масса=1159.45кг, Ni=2.69%, Pd=20.74%
+2026-02-05 15:28:40 - expert_system.recommender - DEBUG - Партия P-2024-004 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 15:28:40 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 15:28:40 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-05 15:28:40 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-05 15:28:40 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 15:28:40 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-003 (Извлечение: 81.8%)
+2026-02-05 15:28:40 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 15:29:43 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 15:29:43 - expert_system.recommender - INFO - Входные данные: Масса=1159.45кг, Ni=2.69%, Pd=20.74%
+2026-02-05 15:29:43 - expert_system.recommender - DEBUG - Партия P-2024-004 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 15:29:43 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 15:29:43 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-05 15:29:43 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-05 15:29:43 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 15:29:43 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-003 (Извлечение: 81.8%)
+2026-02-05 15:29:43 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 15:36:11 - expert_system - INFO - База данных инициализирована
+2026-02-05 15:36:54 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 15:36:54 - expert_system.recommender - INFO - Входные данные: Масса=1109.98кг, Ni=2.69%, Pd=20.74%
+2026-02-05 15:36:54 - expert_system.recommender - DEBUG - Партия P-2024-004 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 15:36:54 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 15:36:54 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-05 15:36:54 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-05 15:36:54 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 15:36:54 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-003 (Извлечение: 81.8%)
+2026-02-05 15:36:54 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 15:44:04 - expert_system - INFO - База данных инициализирована
+2026-02-05 15:44:47 - expert_system - INFO - База данных инициализирована
+2026-02-05 15:45:08 - expert_system - INFO - База данных инициализирована
+2026-02-05 15:45:26 - expert_system - INFO - База данных инициализирована
+2026-02-05 15:49:59 - expert_system - INFO - База данных инициализирована
+2026-02-05 15:51:11 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 15:51:11 - expert_system.recommender - INFO - Входные данные: Масса=0.0кг, Ni=2.69%, Pd=20.74%
+2026-02-05 15:51:11 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 15:51:11 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 7
+2026-02-05 15:51:11 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 0
+2026-02-05 15:51:11 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 0
+2026-02-05 15:51:11 - expert_system.recommender - ERROR - Подходящих партий не обнаружено!
+2026-02-05 15:51:22 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 15:51:22 - expert_system.recommender - INFO - Входные данные: Масса=1159.45кг, Ni=2.69%, Pd=20.74%
+2026-02-05 15:51:22 - expert_system.recommender - DEBUG - Партия P-2024-004 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 15:51:22 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 15:51:22 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-05 15:51:22 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-05 15:51:22 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 15:51:22 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-003 (Извлечение: 81.8%)
+2026-02-05 15:51:22 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 16:18:21 - expert_system - INFO - База данных инициализирована
+2026-02-05 16:18:52 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 16:18:52 - expert_system.recommender - INFO - Входные данные: Масса=1159.45кг, Ni=2.69%, Pd=20.74%
+2026-02-05 16:18:52 - expert_system.recommender - DEBUG - Партия P-2024-004 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 16:18:52 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 16:18:52 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-05 16:18:52 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-05 16:18:52 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 16:18:52 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-003 (Извлечение: 81.8%)
+2026-02-05 16:18:52 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 16:51:15 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 16:51:15 - expert_system.recommender - INFO - Входные данные: Масса=1159.45кг, Ni=2.69%, Pd=20.74%
+2026-02-05 16:51:15 - expert_system.recommender - DEBUG - Партия P-2024-004 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 16:51:15 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 16:51:15 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-05 16:51:15 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-05 16:51:15 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 16:51:15 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-003 (Извлечение: 81.8%)
+2026-02-05 16:51:15 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 16:52:06 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 16:52:06 - expert_system.recommender - INFO - Входные данные: Масса=1000.0кг, Ni=1.57%, Pd=33.62%
+2026-02-05 16:52:06 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 16:52:06 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 16:52:06 - expert_system.recommender - DEBUG - Партия P-2024-005 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 16:52:06 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 16:52:06 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 16:52:06 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 2
+2026-02-05 16:52:06 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 4
+2026-02-05 16:52:06 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 16:52:06 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 16:52:06 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 17:18:36 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:23:32 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 17:23:32 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 17:23:32 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:23:32 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:23:32 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:23:32 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 17:23:32 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 17:23:32 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 17:23:32 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 17:23:32 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 17:23:32 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 17:25:48 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:27:34 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:29:09 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:29:32 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 17:29:32 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=0.0%
+2026-02-05 17:29:32 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:29:32 - expert_system.recommender - DEBUG - Партия P-2024-001 отклонена: 4+ несовпадения (pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:29:32 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:29:32 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:29:32 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 17:29:32 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 17:29:32 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 4
+2026-02-05 17:29:32 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 0
+2026-02-05 17:29:32 - expert_system.recommender - ERROR - Подходящих партий не обнаружено!
+2026-02-05 17:29:47 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 17:29:47 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 17:29:47 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:29:47 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:29:47 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:29:47 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 17:29:47 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 17:29:47 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 17:29:47 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 17:29:47 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 17:29:47 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 17:30:04 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 17:30:04 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 17:30:04 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:30:04 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:30:04 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:30:04 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 17:30:04 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 17:30:04 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 17:30:04 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 17:30:04 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 17:30:04 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 17:38:51 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:39:21 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 17:39:21 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 17:39:21 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:39:21 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:39:21 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:39:21 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 17:39:21 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 17:39:21 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 17:39:21 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 17:39:21 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 17:39:21 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 17:41:02 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:41:30 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 17:41:30 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 17:41:30 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:41:30 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:41:30 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:41:30 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 17:41:30 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 17:41:30 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 17:41:30 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 17:41:30 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 17:41:30 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 17:45:43 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:46:02 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:47:16 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:47:50 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 17:47:50 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 17:47:50 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:47:50 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:47:50 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:47:50 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 17:47:50 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 17:47:50 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 17:47:50 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 17:47:50 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 17:47:50 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 17:48:16 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 17:48:16 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 17:48:16 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:48:16 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:48:16 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:48:16 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 17:48:16 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 17:48:16 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 17:48:16 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 17:48:16 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 17:48:16 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 17:52:17 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:53:11 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 17:53:11 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 17:53:11 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:53:11 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:53:11 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:53:11 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 17:53:11 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 17:53:11 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 17:53:11 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 17:53:11 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 17:53:11 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 17:54:58 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:55:26 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 17:55:26 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 17:55:26 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:55:26 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:55:26 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:55:26 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 17:55:26 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 17:55:26 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 17:55:26 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 17:55:26 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 17:55:26 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 17:57:16 - expert_system - INFO - База данных инициализирована
+2026-02-05 17:57:49 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 17:57:49 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 17:57:49 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 17:57:49 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:57:49 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 17:57:49 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 17:57:49 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 17:57:49 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 17:57:49 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 17:57:49 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 17:57:49 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 18:00:12 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:00:49 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 18:00:49 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 18:00:49 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 18:00:49 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:00:49 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:00:49 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 18:00:49 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 18:00:49 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 18:00:49 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 18:00:49 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 18:00:49 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 18:01:03 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:02:51 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:03:19 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 18:03:19 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 18:03:19 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 18:03:19 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:03:19 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:03:19 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 18:03:19 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 18:03:19 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 18:03:19 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 18:03:19 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 18:03:19 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 18:04:53 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:05:18 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:06:34 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:07:05 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 18:07:05 - expert_system.recommender - INFO - Входные данные: Масса=0.0кг, Ni=1.57%, Pd=33.62%
+2026-02-05 18:07:05 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 18:07:05 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 7
+2026-02-05 18:07:05 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 0
+2026-02-05 18:07:05 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 0
+2026-02-05 18:07:05 - expert_system.recommender - ERROR - Подходящих партий не обнаружено!
+2026-02-05 18:07:12 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 18:07:12 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 18:07:12 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 18:07:12 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:07:12 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:07:12 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 18:07:12 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 18:07:12 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 18:07:12 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 18:07:12 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 18:07:12 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 18:11:18 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:11:49 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 18:11:49 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 18:11:49 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 18:11:49 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:11:49 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:11:49 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 18:11:49 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 18:11:49 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 18:11:49 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 18:11:49 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 18:11:49 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 18:13:50 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:14:17 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 18:14:17 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 18:14:17 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 18:14:17 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:14:17 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:14:17 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 18:14:17 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 18:14:17 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 18:14:17 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 18:14:17 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 18:14:17 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 18:17:09 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:17:36 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 18:17:36 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 18:17:36 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 18:17:36 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:17:36 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:17:36 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 18:17:36 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 18:17:36 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 18:17:36 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 18:17:36 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 18:17:36 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 18:18:20 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:18:48 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 18:18:48 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 18:18:48 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 18:18:48 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:18:48 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:18:48 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 18:18:48 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 18:18:48 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 18:18:48 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 18:18:48 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 18:18:48 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 18:19:14 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:19:42 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 18:19:42 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 18:19:42 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 18:19:42 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:19:42 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:19:42 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 18:19:42 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 18:19:42 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 18:19:42 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 18:19:42 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 18:19:42 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 18:20:09 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:20:37 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 18:20:37 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 18:20:37 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 18:20:37 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:20:37 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:20:37 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 18:20:37 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 18:20:37 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 18:20:37 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 18:20:37 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 18:20:37 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-05 18:21:05 - expert_system - INFO - База данных инициализирована
+2026-02-05 18:21:30 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-05 18:21:30 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-05 18:21:30 - expert_system.recommender - DEBUG - Партия TT1 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, c_percent, se_percent)
+2026-02-05 18:21:30 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:21:30 - expert_system.recommender - DEBUG - Партия P-2024-006 отклонена: 4+ несовпадения (ni_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-05 18:21:30 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-05 18:21:30 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 3
+2026-02-05 18:21:30 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 3
+2026-02-05 18:21:30 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-05 18:21:30 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-05 18:21:30 - expert_system.recommender - INFO - ---------------------------------------
