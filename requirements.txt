@@ -1,0 +1,40 @@
+# Базовые
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+matplotlib>=3.7.0
+plotly>=5.14.0
+
+# GUI - выберите один вариант
+PyQt5>=5.15.0
+pyqtgraph>=0.13.0
+
+# Для машинного обучения
+scikit-learn>=1.3.0
+joblib>=1.3.0
+
+# Для работы с временными рядами
+statsmodels>=0.14.0
+
+# Универсальные драйверы БД
+sqlalchemy>=2.0.0  # Абстракция над разными БД
+sqlalchemy-utils>=0.41.0
+
+# Коннекторы для разных БД
+# Для MySQL/MariaDB:
+pymysql>=1.0.0
+
+# Для PostgreSQL:
+psycopg2-binary>=2.9.0
+
+# Для MS SQL Server:
+pyodbc>=5.0.0
+
+# Дополнительные
+python-dateutil>=2.8.0
+pytz>=2023.0
+joblib>=1.2.0
+pyyaml>=6.0
+python-dotenv>=1.0.0  # Для загрузки переменных окружения
+click>=8.0.0  # Для CLI интерфейса
+tqdm>=4.65.0  # Для прогресс-бара

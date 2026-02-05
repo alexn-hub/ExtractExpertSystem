@@ -1,0 +1,295 @@
+2026-02-03 12:56:34 - expert_system - INFO - Начало наполнения базы данных...
+2026-02-03 12:56:34 - expert_system - INFO - База данных инициализирована
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: P-2024-001
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: P-2024-002
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: P-2024-003
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: P-2024-004
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: P-2024-005
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 12:56:34 - expert_system - ERROR - Ошибка добавления партии: P-2024-006
+2026-02-03 12:56:34 - expert_system - INFO - Добавлено 0 из 6 партий
+2026-02-03 12:56:34 - expert_system - INFO - Наполнение базы данных завершено
+2026-02-03 13:02:46 - expert_system - INFO - Начало переинициализации базы данных...
+2026-02-03 13:02:46 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:02:46 - expert_system - INFO - Созданы таблицы: ['batches', 'process_data', 'sqlite_sequence']
+2026-02-03 13:02:46 - expert_system - INFO - База данных успешно переинициализирована
+2026-02-03 13:02:51 - expert_system - INFO - Начало наполнения базы данных...
+2026-02-03 13:02:51 - expert_system - INFO - Очистка базы данных от тестовых записей...
+2026-02-03 13:02:51 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:02:51 - expert_system - INFO - Удалено 0 тестовых записей
+2026-02-03 13:02:51 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: P-2024-001
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: P-2024-002
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: P-2024-003
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: P-2024-004
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: P-2024-005
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка добавления партии: P-2024-006
+2026-02-03 13:02:51 - expert_system - INFO - Добавлено 0 из 6 партий
+2026-02-03 13:02:51 - expert_system - ERROR - Ошибка чтения данных: Execution failed on sql '
+    SELECT 
+        batch_id, 
+        sample_weight, 
+        ni_percent,
+        cu_percent,
+        pt_percent,
+        pd_percent,
+        extraction_percent,
+        is_good
+    FROM batches 
+    ORDER BY batch_id
+    ': no such column: is_good
+2026-02-03 13:02:51 - expert_system - INFO - Наполнение базы данных завершено
+2026-02-03 13:03:00 - expert_system - INFO - Начало переинициализации базы данных...
+2026-02-03 13:03:00 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:03:00 - expert_system - INFO - Созданы таблицы: ['batches', 'process_data', 'sqlite_sequence']
+2026-02-03 13:03:00 - expert_system - INFO - База данных успешно переинициализирована
+2026-02-03 13:06:41 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:06:54 - expert_system - INFO - Начало переинициализации базы данных...
+2026-02-03 13:06:54 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:06:54 - expert_system - INFO - Созданы таблицы: ['batches', 'process_data', 'sqlite_sequence']
+2026-02-03 13:06:54 - expert_system - INFO - База данных успешно переинициализирована
+2026-02-03 13:07:00 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:07:43 - expert_system - INFO - Начало миграции базы данных...
+2026-02-03 13:07:43 - expert_system - ERROR - База данных не найдена: data/database.db
+2026-02-03 13:07:53 - expert_system - INFO - Начало наполнения базы данных...
+2026-02-03 13:07:53 - expert_system - INFO - Очистка базы данных от тестовых записей...
+2026-02-03 13:07:53 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:07:53 - expert_system - INFO - Удалено 0 тестовых записей
+2026-02-03 13:07:53 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: P-2024-001
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: P-2024-002
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: P-2024-003
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: P-2024-004
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: P-2024-005
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка добавления партии: P-2024-006
+2026-02-03 13:07:53 - expert_system - INFO - Добавлено 0 из 6 партий
+2026-02-03 13:07:53 - expert_system - ERROR - Ошибка чтения данных: Execution failed on sql '
+    SELECT 
+        batch_id, 
+        sample_weight, 
+        ni_percent,
+        cu_percent,
+        pt_percent,
+        pd_percent,
+        extraction_percent,
+        is_good
+    FROM batches 
+    ORDER BY batch_id
+    ': no such column: is_good
+2026-02-03 13:07:53 - expert_system - INFO - Наполнение базы данных завершено
+2026-02-03 13:11:17 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 13:11:17 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:11:45 - expert_system - ERROR - Ошибка выполнения запроса: Execution failed on sql 'SELECT * FORM batches': near "FORM": syntax error
+2026-02-03 13:11:50 - expert_system - INFO - Выполнен запрос: SELECT * FROM batches...
+2026-02-03 13:14:04 - expert_system - INFO - Начало наполнения базы данных...
+2026-02-03 13:14:04 - expert_system - INFO - Очистка базы данных от тестовых записей...
+2026-02-03 13:14:04 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:14:04 - expert_system - INFO - Удалено 0 тестовых записей
+2026-02-03 13:14:04 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: P-2024-001
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: P-2024-002
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: P-2024-003
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: P-2024-004
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: P-2024-005
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: table batches has no column named c_percent
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка добавления партии: P-2024-006
+2026-02-03 13:14:04 - expert_system - INFO - Добавлено 0 из 6 партий
+2026-02-03 13:14:04 - expert_system - ERROR - Ошибка чтения данных: Execution failed on sql '
+    SELECT 
+        batch_id, 
+        sample_weight, 
+        ni_percent,
+        cu_percent,
+        pt_percent,
+        pd_percent,
+        extraction_percent,
+        is_good
+    FROM batches 
+    ORDER BY batch_id
+    ': no such column: is_good
+2026-02-03 13:14:04 - expert_system - INFO - Наполнение базы данных завершено
+2026-02-03 13:14:54 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:17:46 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:18:46 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:21:59 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:21:59 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:22:23 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:23:45 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 13:23:45 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:24:03 - expert_system - INFO - Выполнен запрос: SELECT * FROM batches...
+2026-02-03 13:24:24 - expert_system - INFO - Партия TT1 добавлена в БД
+2026-02-03 13:24:27 - expert_system - INFO - Выполнен запрос: SELECT * FROM batches...
+2026-02-03 13:24:41 - expert_system - INFO - Найдено 0 похожих партий
+2026-02-03 13:24:50 - expert_system - INFO - Выполнен запрос: SELECT * FROM batches...
+2026-02-03 13:25:36 - expert_system - INFO - Начало наполнения базы данных...
+2026-02-03 13:25:36 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:25:36 - expert_system - INFO - Партия P-2024-001 добавлена в БД
+2026-02-03 13:25:36 - expert_system - INFO - Добавлена партия: P-2024-001
+2026-02-03 13:25:36 - expert_system - INFO - Партия P-2024-002 добавлена в БД
+2026-02-03 13:25:36 - expert_system - INFO - Добавлена партия: P-2024-002
+2026-02-03 13:25:36 - expert_system - INFO - Партия P-2024-003 добавлена в БД
+2026-02-03 13:25:36 - expert_system - INFO - Добавлена партия: P-2024-003
+2026-02-03 13:25:36 - expert_system - INFO - Партия P-2024-004 добавлена в БД
+2026-02-03 13:25:36 - expert_system - INFO - Добавлена партия: P-2024-004
+2026-02-03 13:25:36 - expert_system - INFO - Партия P-2024-005 добавлена в БД
+2026-02-03 13:25:36 - expert_system - INFO - Добавлена партия: P-2024-005
+2026-02-03 13:25:36 - expert_system - INFO - Партия P-2024-006 добавлена в БД
+2026-02-03 13:25:36 - expert_system - INFO - Добавлена партия: P-2024-006
+2026-02-03 13:25:36 - expert_system - INFO - Добавлено 6 из 6 партий
+2026-02-03 13:25:36 - expert_system - INFO - Наполнение базы данных завершено
+2026-02-03 13:25:42 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 13:25:42 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:25:54 - expert_system - INFO - Выполнен запрос: SELECT * FROM batches...
+2026-02-03 13:33:58 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 13:33:58 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:50:45 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 13:50:45 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:50:45 - expert_system - ERROR - Критическая ошибка: name 'QComboBox' is not defined
+2026-02-03 13:54:06 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 13:54:06 - expert_system - INFO - База данных инициализирована
+2026-02-03 13:54:06 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 13:54:25 - expert_system - INFO - Выполнен запрос: SELECT * FROM batches...
+2026-02-03 15:55:06 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 15:55:06 - expert_system - INFO - База данных инициализирована
+2026-02-03 15:55:06 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:00:56 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:00:56 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:00:56 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:11:12 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:11:12 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:11:13 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:11:13 - expert_system - ERROR - Критическая ошибка: len(X) must be len(Y)+1 since stepMode=True (got (500,) and (500,))
+2026-02-03 16:11:47 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:11:47 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:11:47 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:11:47 - expert_system - ERROR - Критическая ошибка: 'SulfatizerWidget' object has no attribute 'temp_plot'
+2026-02-03 16:13:28 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:13:28 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:13:28 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:13:28 - expert_system - ERROR - Критическая ошибка: 'SulfatizerWidget' object has no attribute 'temp_plot'
+2026-02-03 16:14:44 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:14:45 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:14:45 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:18:15 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:18:15 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:18:15 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:18:15 - expert_system - ERROR - Критическая ошибка: 'RecommendationTable' object has no attribute 'generate_test_data'
+2026-02-03 16:25:16 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:25:16 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:25:16 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:25:16 - expert_system - ERROR - Критическая ошибка: len(X) must be len(Y)+1 since stepMode=True (got (500,) and (500,))
+2026-02-03 16:31:46 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:31:46 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:31:46 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:31:46 - expert_system - ERROR - Критическая ошибка: 'RecommendationTable' object has no attribute 'generate_test_data'
+2026-02-03 16:38:01 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:38:01 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:38:01 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:49:44 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:49:44 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:49:44 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:55:37 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:55:37 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:55:37 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:55:37 - expert_system - ERROR - Критическая ошибка: name 'RecommendationTable' is not defined
+2026-02-03 16:56:21 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:56:21 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:56:21 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 16:56:21 - expert_system - ERROR - Критическая ошибка: name 'QSplitter' is not defined
+2026-02-03 16:57:04 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 16:57:04 - expert_system - INFO - База данных инициализирована
+2026-02-03 16:57:04 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:00:20 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:00:20 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:00:20 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:07:13 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:07:13 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:07:13 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:07:13 - expert_system - ERROR - Критическая ошибка: 'ProcessVisualizationWidget' object has no attribute 'temp_plot'
+2026-02-03 17:11:26 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:11:26 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:11:26 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:12:00 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:12:00 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:12:01 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:13:26 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:13:26 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:13:26 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:17:48 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:17:48 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:17:49 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:21:32 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:21:32 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:21:32 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:22:33 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:22:34 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:22:34 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:25:50 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:25:50 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:25:50 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:26:12 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:26:12 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:26:12 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:26:28 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:26:28 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:26:28 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:27:19 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:27:19 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:27:20 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:32:11 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:32:11 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:32:12 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
+2026-02-03 17:32:51 - expert_system - INFO - Запуск экспертной системы извлечения металлов
+2026-02-03 17:32:51 - expert_system - INFO - База данных инициализирована
+2026-02-03 17:32:51 - expert_system - INFO - Выполнен запрос: 
+            SELECT batch_id, extraction_date, ext...
