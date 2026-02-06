@@ -48,18 +48,20 @@ class DatabaseManager:
 
                 # Таблица 2: Процессные данные
                 conn.execute('''
-                CREATE TABLE IF NOT EXISTS process_data (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    batch_id TEXT NOT NULL,
-                    timestamp DATETIME NOT NULL,
-                    temperature_1 REAL,
-                    temperature_2 REAL,
-                    temperature_3 REAL,
-                    acid_flow REAL,
-                    current_value REAL,
-                    FOREIGN KEY (batch_id) REFERENCES batches(batch_id)
-                )
-                ''')
+                                CREATE TABLE IF NOT EXISTS process_data (
+                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    batch_id TEXT NOT NULL,
+                                    timestamp DATETIME NOT NULL,
+                                    temperature_1 REAL,
+                                    temperature_2 REAL,
+                                    temperature_3 REAL,
+                                    acid_flow REAL,
+                                    current_value REAL,
+                                    electrodes_pos REAL DEFAULT 0,
+                                    level_mixer REAL DEFAULT 0,
+                                    FOREIGN KEY (batch_id) REFERENCES batches(batch_id)
+                                )
+                                ''')
 
                 # Индексы для ускорения поиска
                 conn.execute('''
@@ -165,14 +167,16 @@ class DatabaseManager:
             with self.get_connection() as conn:
                 cursor = conn.cursor()
 
+                # 1. Добавляем колонки в SQL запрос
                 sql = '''
                 INSERT INTO process_data 
                 (batch_id, timestamp, temperature_1, temperature_2, 
-                 temperature_3, acid_flow, current_value)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                 temperature_3, acid_flow, current_value, electrodes_pos, level_mixer)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 '''
 
                 for record in process_records:
+                    # 2. Добавляем значения в параметры (используем .get() для безопасности)
                     params = (
                         batch_id,
                         record['timestamp'],
@@ -180,12 +184,13 @@ class DatabaseManager:
                         record.get('temperature_2'),
                         record.get('temperature_3'),
                         record.get('acid_flow'),
-                        record.get('current_value')
+                        record.get('current_value'),
+                        record.get('electrodes_pos', 0.0),  # Новое поле
+                        record.get('level_mixer', 0.0)  # Новое поле
                     )
                     cursor.execute(sql, params)
 
                 conn.commit()
-
                 logger.info(f"Добавлено {len(process_records)} записей для партии {batch_id}")
                 return True
 
@@ -241,19 +246,18 @@ class DatabaseManager:
             logger.error(f"Ошибка получения процессных данных: {e}")
             return pd.DataFrame()
 
-    def execute_query(self, query: str) -> pd.DataFrame:
-        """Выполнение произвольного SQL запроса (только для чтения)"""
+    def execute_query(self, query: str) -> Any:
+        """Универсальное выполнение SQL запросов"""
         try:
-            # Безопасность: проверяем, что это SELECT запрос
             query_lower = query.strip().lower()
-            if not query_lower.startswith('select'):
-                raise ValueError("Разрешены только SELECT запросы")
-
             with self.get_connection() as conn:
-                df = pd.read_sql_query(query, conn)
-                logger.info(f"Выполнен запрос: {query[:50]}...")
-                return df
-
+                if query_lower.startswith('select'):
+                    return pd.read_sql_query(query, conn)
+                else:
+                    cursor = conn.cursor()
+                    cursor.execute(query)
+                    conn.commit()
+                    return cursor.rowcount  # Возвращаем кол-во измененных строк
         except Exception as e:
             logger.error(f"Ошибка выполнения запроса: {e}")
             raise

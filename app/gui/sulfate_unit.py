@@ -46,6 +46,11 @@ class SulfateUnit(QWidget):
     def process_start_request(self):
         """Логика перехода от ввода к работе"""
         raw_data = self.input_page.get_data()
+
+        # ЕСЛИ ДАННЫЕ НЕ ПРОШЛИ ВАЛИДАЦИЮ — ПРЕРЫВАЕМ
+        if raw_data is None:
+            return
+
         best_match = self.recommender.find_best_match(raw_data)
 
         if best_match:

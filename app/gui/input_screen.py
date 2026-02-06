@@ -72,9 +72,6 @@ class InputScreen(QWidget):
             row, col = divmod(i, 2)
             chem_layout.addWidget(QLabel(f"{name}:"), row, col * 2)
 
-            if hasattr(self, 'parent_unit'):
-                self.parent_unit.return_to_input()
-
             val = test_values.get(key, "0")
             edit = QLineEdit(val)
             chem_layout.addWidget(edit, row, col * 2 + 1)
@@ -85,7 +82,7 @@ class InputScreen(QWidget):
 
 
         # Кнопка ОК
-        self.btn_start = QPushButton("ОК (Запустить расчет)")
+        self.btn_start = QPushButton("Запустить расчет")
         self.btn_start.setMinimumHeight(60)
         self.btn_start.setStyleSheet("""
             QPushButton {
@@ -100,16 +97,50 @@ class InputScreen(QWidget):
         layout.addWidget(self.btn_start)
         layout.addStretch()
 
-
     def get_data(self):
-        """Метод для сбора данных из всех полей для Recommender"""
-        data = {
-            'sulfate_number': int(self.combo_sfr.currentText().split('-')[-1]),
-            'batch_id': self.edit_batch_id.text(),
-            'sample_weight': float(self.edit_weight.text() or 0),
-            'extraction_percent': float(self.edit_extraction.text() or 0)
-        }
-        # Собираем химию
-        for key, edit in self.inputs.items():
-            data[key] = float(edit.text() or 0)
-        return data
+        """Метод для сбора данных из всех полей для Recommender с проверкой ошибок"""
+        from PyQt5.QtWidgets import QMessageBox
+
+        def clean_float(text):
+            """Заменяет запятую на точку и пробует превратить в число"""
+            try:
+                # 1. Меняем запятую на точку, если она есть
+                sanitized_text = text.replace(',', '.')
+                return float(sanitized_text)
+            except ValueError:
+                return None
+
+        try:
+            # Проверка основных полей
+            weight = clean_float(self.edit_weight.text())
+            extraction = clean_float(self.edit_extraction.text())
+
+            if weight is None or extraction is None:
+                raise ValueError("Поля 'Масса' или 'Извлечение' заполнены неверно")
+
+            data = {
+                'sulfate_number': int(self.combo_sfr.currentText().split('-')[-1]),
+                'batch_id': self.edit_batch_id.text(),
+                'sample_weight': weight,
+                'extraction_percent': extraction
+            }
+
+            # Собираем и проверяем химию
+            for key, edit in self.inputs.items():
+                val = clean_float(edit.text())
+                if val is None:
+                    # Ищем красивое имя элемента для сообщения об ошибке
+                    element_name = next((e[0] for e in [
+                        ("Ni", "ni_percent"), ("Cu", "cu_percent"), ("Pt", "pt_percent"),
+                        ("Pd", "pd_percent"), ("SiO2", "sio2_percent"), ("C", "c_percent"),
+                        ("Se", "se_percent")
+                    ] if e[1] == key), key)
+                    raise ValueError(f"Ошибка в поле химического состава: {element_name}")
+                data[key] = val
+
+            return data
+
+        except ValueError as e:
+            # Вывод ошибки пользователю
+            QMessageBox.critical(self, "Ошибка ввода", str(e))
+            return None

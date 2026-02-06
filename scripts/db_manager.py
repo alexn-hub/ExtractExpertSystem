@@ -79,11 +79,27 @@ class SimpleDBManager(QWidget):
         try:
             # Получаем соединение через ваш db_manager
             with self.db_manager.get_connection() as conn:
-                # Используем pandas для загрузки данных
-                df = pd.read_sql_query(query, conn)
+                cursor = conn.cursor()
 
-                self.display_data(df)
-                self.status_label.setText(f"Успешно: получено строк: {len(df)}")
+                # Проверяем, это запрос на чтение (SELECT) или на изменение
+                is_select = query.lower().startswith("select") or query.lower().startswith("pragma")
+
+                if is_select:
+                    # Для SELECT используем pandas
+                    df = pd.read_sql_query(query, conn)
+                    self.display_data(df)
+                    self.status_label.setText(f"Успешно: получено строк: {len(df)}")
+                else:
+                    # Для DELETE, UPDATE, INSERT используем обычный курсор
+                    cursor.execute(query)
+                    conn.commit()  # Фиксируем изменения в файле!
+
+                    # Очищаем таблицу, так как данных для показа нет
+                    self.table.setRowCount(0)
+                    self.table.setColumnCount(0)
+
+                    self.status_label.setText(f"Запрос выполнен успешно (изменено строк: {cursor.rowcount})")
+
                 self.status_label.setStyleSheet("color: green")
 
         except Exception as e:

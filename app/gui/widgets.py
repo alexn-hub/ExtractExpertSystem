@@ -29,10 +29,10 @@ class SulfatizerWidget(QWidget):
         self.timer.timeout.connect(self._update_frame)
 
     def _update_frame(self):
-        self.angle = (self.angle + 15) % 360
+        # Было 15, ставим 5 для плавного и медленного вращения
+        self.angle = (self.angle + 5) % 360
 
-        # Плавное приближение текущей высоты к целевой
-        # Скорость 0.1 (10% расстояния за кадр)
+        # Плавное движение электродов остается без изменений
         diff = self.target_lte - self.current_lte
         if abs(diff) > 0.1:
             self.current_lte += diff * 0.1
@@ -69,15 +69,45 @@ class SulfatizerWidget(QWidget):
         self.update()
 
     def draw_indicator(self, painter, x, y, label, value, unit):
-        rect = QRectF(x, y, 120, 40)
-        painter.setPen(QPen(Qt.black, 2))
-        painter.setBrush(Qt.white)
-        painter.drawRect(rect)
+        # 1. Форматирование числа (0.00 с принудительной точкой)
+        try:
+            val_float = float(value)
+            # Форматируем через f-строку (она всегда использует точку)
+            display_text = f"{val_float:.2f}"
+        except:
+            display_text = str(value)
+
+        # 2. Геометрия
+        label_w = 45
+        rect_w = 80
+        rect_h = 25
+        val_rect = QRectF(x + label_w, y, rect_w, rect_h)
+
+        painter.setRenderHint(QPainter.Antialiasing)
+
+        # 3. Наименование (Графитовый серый)
+        painter.setPen(QColor(0, 0, 0)) #(64, 64, 64))
+        painter.setFont(QFont("Arial", 9))
+        painter.drawText(QRectF(x, y, label_w - 5, rect_h), Qt.AlignRight | Qt.AlignVCenter, label)
+
+        # 4. Рамка значения
+        painter.setPen(QPen(QColor(180, 180, 180), 1))
+        painter.setBrush(QBrush(Qt.white))
+        painter.drawRoundedRect(val_rect, 3, 3)
+
+        # 5. Текст значения (Справа, НЕ жирный)
         painter.setPen(Qt.black)
-        painter.setFont(QFont("Arial", 10, QFont.Bold))
-        text = f"{label} {value} {unit}"
-        painter.drawText(rect, Qt.AlignCenter, text)
-        return rect
+        painter.setFont(QFont("Verdana", 10))
+        text_padding = 6
+        inner_rect = val_rect.adjusted(0, 0, -text_padding, 0)
+        painter.drawText(inner_rect, Qt.AlignRight | Qt.AlignVCenter, display_text)
+
+        # 6. Единицы измерения (Графитовый серый)
+        painter.setPen(QColor(0, 0, 0)) #(80, 80, 80))
+        painter.setFont(QFont("Arial", 8))
+        painter.drawText(int(x + label_w + rect_w + 5), int(y + rect_h / 2 + 5), unit)
+
+        return val_rect
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -96,64 +126,92 @@ class SulfatizerWidget(QWidget):
         painter.setPen(Qt.NoPen)
         painter.drawRect(int(tx + 3), int(water_y), int(tw - 6), int(ty + th - water_y - 3))
 
-        # 2. Корпус реактора
-        painter.setPen(QPen(Qt.black, 3))
+        # 2. КОРПУС РЕАКТОРА (Оставляем толстым - 4px)
+        painter.setPen(QPen(Qt.black, 4))
         painter.setBrush(Qt.NoBrush)
         painter.drawLine(int(tx), int(ty), int(tx), int(ty + th))
         painter.drawLine(int(tx), int(ty + th), int(tx + tw), int(ty + th))
         painter.drawLine(int(tx + tw), int(ty + th), int(tx + tw), int(ty))
 
-        # 3. Индикаторы и Стрелка G
-        g_rect = self.draw_indicator(painter, tx - 150, ty - 60, "G,", self.data["G"], "кг")
+        # 3. Индикаторы и стрелка
+        self.draw_indicator(painter, tx - 190, ty - 100, "Gк:", self.data["G"], "т")
+
         arrow_color = QColor('#FFD740')
-        painter.setPen(QPen(arrow_color, 4, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
-        start_arrow = QPointF(g_rect.right() + 5, g_rect.center().y())
-        end_arrow = QPointF(tx + 30, ty + 40)
-        painter.drawLine(int(start_arrow.x()), int(start_arrow.y()), int(end_arrow.x()), int(start_arrow.y()))
-        painter.drawLine(int(end_arrow.x()), int(start_arrow.y()), int(end_arrow.x()), int(end_arrow.y()))
-        painter.drawLine(int(end_arrow.x()), int(end_arrow.y()), int(end_arrow.x() - 8), int(end_arrow.y() - 10))
-        painter.drawLine(int(end_arrow.x()), int(end_arrow.y()), int(end_arrow.x() + 8), int(end_arrow.y() - 10))
+        painter.setPen(QPen(arrow_color, 3, Qt.SolidLine, Qt.RoundCap))  # Стрелка чуть тоньше
+        painter.drawLine(int(tx - 60), int(ty - 40), int(tx + 30), int(ty - 40))
+        painter.drawLine(int(tx + 30), int(ty - 40), int(tx + 30), int(ty + 40))
+        painter.drawLine(int(tx + 30), int(ty + 40), int(tx + 22), int(ty + 30))
+        painter.drawLine(int(tx + 30), int(ty + 40), int(tx + 38), int(ty + 30))
 
-        self.draw_indicator(painter, tx - 150, ty + 60, "I п", self.data["Ip"], "А")
-        self.draw_indicator(painter, tx + tw + 30, ty - 20, "Тг", self.data["Tg"], "°C")
-        self.draw_indicator(painter, tx + tw + 30, ty + 100, "Lt э", self.data["Lte"], "мм")
-        self.draw_indicator(painter, tx + tw + 30, ty + 170, "Lt р", self.data["Ltr"], "мм")
-        self.draw_indicator(painter, cx - 60, ty + th - 50, "Т р", self.data["Tr"], "°C")
+        self.draw_indicator(painter, tx - 190, ty + 60, "Iп:", self.data["Ip"], "А")
+        self.draw_indicator(painter, tx + tw + 15, ty - 20, "Тг:", self.data["Tg"], "°C")
+        self.draw_indicator(painter, tx + tw + 15, ty + 100, "Lt э:", self.data["Lte"], "мм")
+        self.draw_indicator(painter, tx + tw + 15, ty + 180, "Lt р:", self.data["Ltr"], "мм")
+        self.draw_indicator(painter, cx - 85, ty + th - 35, "Тр:", self.data["Tr"], "°C")
 
-        # 4. Электроды (Динамические)
+        # 4. Электроды
         electrode_width = 15
-        electrode_base_h = 80  # Базовая длина (над раствором)
-
-        # Умножаем значение lte на коэффициент (например, 2.0),
-        # чтобы они опускались визуально ниже
         visual_multiplier = 2.0
-        total_h = electrode_base_h + (self.current_lte * visual_multiplier)
-
+        total_h = 80 + (self.current_lte * visual_multiplier)
         painter.setPen(QPen(Qt.black, 1))
-        painter.setBrush(QBrush(QColor(45, 45, 45)))  # Графитовый цвет
-
-        # Отрисовка левого и правого электродов
+        painter.setBrush(QBrush(QColor(45, 45, 45)))
         painter.drawRect(int(cx - 70), int(ty - 10), electrode_width, int(total_h))
         painter.drawRect(int(cx + 70 - electrode_width), int(ty - 10), electrode_width, int(total_h))
 
-        # 5. Мешалка
-        painter.setPen(QPen(Qt.black, 2))
+        # 5. МЕШАЛКА С ЭФФЕКТАМИ ОБЪЕМА (ИСПРАВЛЕННАЯ)
         mixer_y = ty + th - 75
-        painter.drawLine(int(cx), int(ty - 10), int(cx), int(mixer_y))
-        blade_w = 40 * math.cos(math.radians(self.angle))
-        painter.setBrush(QBrush(QColor(40, 40, 40, 200)))
-        painter.drawEllipse(QPointF(cx + blade_w, mixer_y), abs(blade_w), 10)
-        painter.drawEllipse(QPointF(cx - blade_w, mixer_y), abs(blade_w), 10)
 
-        # 6. Верхняя Трапеция и исходящие линии
-        painter.setPen(QPen(Qt.black, 3))
-        painter.setBrush(QBrush(QColor(220, 220, 220)))
+        # Сначала рисуем вал (толстый - 4px)
+        painter.setPen(QPen(Qt.black, 4))
+        painter.drawLine(int(cx), int(ty - 10), int(cx), int(mixer_y))
+
+        # Расчет параметров
+        rad = math.radians(self.angle)
+        cos_val = math.cos(rad)  # Отвечает за ширину (размах)
+        sin_val = math.sin(rad)  # Отвечает за то, впереди лопасть или сзади
+
+        max_w = 25
+        current_w = max_w * cos_val
+
+        # Базовый тон (графитовый)
+        base_grey = 50
+
+        # Рассчитываем динамическую яркость.
+        # Когда sin_val = 1 (лопасть максимально впереди), она самая светлая.
+        # Когда sin_val = -1 (лопасть за валом), она самая темная.
+        def get_dynamic_color(s_val, is_left=False):
+            # Для левой лопасти инвертируем синус, так как она в противофазе
+            val = -s_val if is_left else s_val
+            brightness_mod = int(val * 40)  # Амплитуда изменения цвета (+-40)
+            c = max(0, min(255, base_grey + brightness_mod))
+            return QColor(c, c, c, 220)
+
+        painter.setPen(QPen(Qt.black, 1.5))
+
+        # Рисуем лопасти. Чтобы одна перекрывала другую правильно,
+        # сначала рисуем ту, что "дальше" (sin < 0), потом ту, что "ближе".
+
+        parts = [
+            {'w': current_w, 'is_left': False, 'sin': sin_val},  # Правая
+            {'w': -current_w, 'is_left': True, 'sin': -sin_val}  # Левая
+        ]
+
+        # Сортируем по значению синуса (сначала задние, потом передние)
+        parts.sort(key=lambda p: p['sin'])
+
+        for part in parts:
+            painter.setBrush(QBrush(get_dynamic_color(sin_val, part['is_left'])))
+            painter.drawEllipse(QPointF(cx + part['w'], mixer_y), abs(part['w']), 8)
+
+        # 6. ВЕРХНЯЯ ТРАПЕЦИЯ И ГАЗООТВОД (Тонкие линии - 1.5px)
+        painter.setPen(QPen(Qt.black, 1.5))
+        painter.setBrush(QBrush(QColor(240, 240, 240)))  # Цвет чуть светлее
         trap = QPolygonF([QPointF(cx - 50, ty - 40), QPointF(cx + 50, ty - 40),
                           QPointF(cx + 75, ty - 10), QPointF(cx - 75, ty - 10)])
         painter.drawPolygon(trap)
 
-        # Исходящие линии (трубы/кабели) сверху трапеции
-        painter.setPen(QPen(Qt.black, 4))
+        # Тонкие линии газоотвода/кабелей сверху
+        painter.setPen(QPen(Qt.black, 1.5))
         # Линия 1
         painter.drawLine(int(cx - 20), int(ty - 40), int(cx - 20), int(ty - 70))
         painter.drawLine(int(cx - 20), int(ty - 70), int(cx + 150), int(ty - 70))
@@ -161,7 +219,7 @@ class SulfatizerWidget(QWidget):
         painter.drawLine(int(cx + 15), int(ty - 40), int(cx + 15), int(ty - 55))
         painter.drawLine(int(cx + 15), int(ty - 55), int(cx + 150), int(ty - 55))
 
-        # Подпись
+        # Подпись внизу
         painter.setPen(Qt.black)
         painter.setFont(QFont("Arial", 12, QFont.Bold))
         painter.drawText(QRectF(cx - 50, ty + th + 15, 100, 30), Qt.AlignCenter, "СФР-3")

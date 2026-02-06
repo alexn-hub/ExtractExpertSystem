@@ -61,7 +61,7 @@ class WorkScreen(QWidget):
         top_layout.setSpacing(10)
 
         # ЛЕВО: Параметры
-        self.left_group = QGroupBox("Параметры сульфатизации")
+        self.left_group = QGroupBox("Прогнозируемые параметры сульфатизации")
         self.left_group.setStyleSheet(group_style)
         left_vbox = QVBoxLayout(self.left_group)
         left_vbox.setContentsMargins(5, 20, 5, 5)
@@ -70,7 +70,7 @@ class WorkScreen(QWidget):
         left_vbox.addWidget(self.sulfatizer)
 
         # ПРАВО: Управление
-        self.right_group = QGroupBox("Рекомендации и управление")
+        self.right_group = QGroupBox("Рекомендации по расходу кислоты")
         self.right_group.setStyleSheet(group_style)
         self.right_group.setFixedWidth(420)
         right_vbox = QVBoxLayout(self.right_group)
@@ -110,7 +110,7 @@ class WorkScreen(QWidget):
 
 
         # Прогноз извлечения (Крупно)
-        self.val_extraction = QLabel("Прогноз извлечения: 0.0 %")
+        self.val_extraction = QLabel("Прогноз извлечения Rh: 0.0 %")
         self.val_extraction.setAlignment(Qt.AlignCenter)
         self.val_extraction.setStyleSheet("""
             font-weight: bold; color: #0D47A1; font-size: 15pt; 
@@ -122,7 +122,7 @@ class WorkScreen(QWidget):
         top_layout.addWidget(self.right_group, stretch=1)
 
         # --- НИЖНЯЯ СЕКЦИЯ (60%) ---
-        self.graph_group = QGroupBox("Прогнозируемый график процесса")
+        self.graph_group = QGroupBox("Прогнозируемый график процесса сульфатизации")
         self.graph_group.setStyleSheet(group_style)
         graph_vbox = QVBoxLayout(self.graph_group)
         graph_vbox.setContentsMargins(5, 25, 5, 5)
@@ -159,7 +159,7 @@ class WorkScreen(QWidget):
         self.history_data = history_df
         self.current_minute = 0
         self.active_pulses = []
-        self.val_extraction.setText(f"Прогноз извлечения: {batch_info.get('extraction_percent', 0.0)} %")
+        self.val_extraction.setText(f"Прогноз извлечения Rh: {batch_info.get('extraction_percent', 0.0)} %")
         x = list(range(len(history_df)))
         self.curve_tp1.setData(x, history_df['temperature_1'].values)
         self.curve_tp2.setData(x, history_df['temperature_2'].values)
@@ -182,20 +182,19 @@ class WorkScreen(QWidget):
             self.rec_table.setItem(i, 2, QTableWidgetItem(f"{duration} мин"))
             for col in range(3):
                 self.rec_table.item(i, col).setTextAlignment(Qt.AlignCenter)
-            # ИЗМЕНЕНИЕ ТУТ:
-            # Вместо self.update_ui_elements(0) принудительно ставим нули.
-            # Теперь графики будут видны, но на самом аппарате будут 0, пока не нажмете "ЗАПУСК"
+
             self.sulfatizer.set_params(0, 0, 0, 0, 0, 0)
             self.lbl_process_time.setText("00:00")
 
     def start_simulation(self):
         if self.history_data is not None:
-            self.current_minute = 0  # Сброс на начало
-            self.update_ui_elements(0)  # Показать данные сразу
+            self.current_minute = 0
+
+            # СНАЧАЛА включаем анимацию
             self.sulfatizer.start_animation()
-
-            self.timer.start(1000)
-
+            # ТЕПЕРЬ передаем данные
+            self.update_ui_elements(0)
+            self.timer.start(1000)  # В продакт нужно указать 600000, чтобы была настоящая минута
             self.btn_run.setEnabled(False)
             self.btn_stop.setEnabled(True)
 
