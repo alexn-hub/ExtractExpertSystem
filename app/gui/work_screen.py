@@ -182,13 +182,20 @@ class WorkScreen(QWidget):
             self.rec_table.setItem(i, 2, QTableWidgetItem(f"{duration} мин"))
             for col in range(3):
                 self.rec_table.item(i, col).setTextAlignment(Qt.AlignCenter)
-        self.update_ui_elements(0)
+            # ИЗМЕНЕНИЕ ТУТ:
+            # Вместо self.update_ui_elements(0) принудительно ставим нули.
+            # Теперь графики будут видны, но на самом аппарате будут 0, пока не нажмете "ЗАПУСК"
+            self.sulfatizer.set_params(0, 0, 0, 0, 0, 0)
+            self.lbl_process_time.setText("00:00")
 
     def start_simulation(self):
         if self.history_data is not None:
-            self.current_minute = 0
-            self.timer.start(1000)
+            self.current_minute = 0  # Сброс на начало
+            self.update_ui_elements(0)  # Показать данные сразу
             self.sulfatizer.start_animation()
+
+            self.timer.start(1000)
+
             self.btn_run.setEnabled(False)
             self.btn_stop.setEnabled(True)
 
@@ -217,7 +224,8 @@ class WorkScreen(QWidget):
                 ip=int(row.get('current_value', 0)),
                 tr=row.get('temperature_1', 0.0),
                 tg=row.get('temperature_3', 0.0),
-                lte=0, ltr=0
+                lte=row.get('electrodes_pos', 0.0),
+                ltr=row.get('level_mixer', 0.0)
             )
 
     def stop_simulation(self):
@@ -226,9 +234,15 @@ class WorkScreen(QWidget):
         self.current_minute = 0
         self.v_line.setValue(0)
         self.lbl_process_time.setText("00:00")
+
+        # Сброс всех параметров мнемосхемы в ноль
+        self.sulfatizer.set_params(0, 0, 0, 0, 0, 0)
+
+        # Сброс подсветки таблицы (если есть)
         for i in range(self.rec_table.rowCount()):
-            for j in range(3):
-                if self.rec_table.item(i, j):
-                    self.rec_table.item(i, j).setBackground(QColor("white"))
+            for j in range(self.rec_table.columnCount()):
+                item = self.rec_table.item(i, j)
+                if item:
+                    item.setBackground(QColor("white"))
         self.btn_run.setEnabled(True)
         self.btn_stop.setEnabled(False)
