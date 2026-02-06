@@ -35,18 +35,29 @@ class InputScreen(QWidget):
         form_layout.addWidget(self.edit_batch_id, 1, 1)
 
         form_layout.addWidget(QLabel("Масса (кг):"), 2, 0)
-        self.edit_weight = QLineEdit("0")
+        self.edit_weight = QLineEdit("1042.08")
         form_layout.addWidget(self.edit_weight, 2, 1)
 
 
         form_layout.addWidget(QLabel("Извлечение (%):"), 3, 0)
-        self.edit_extraction = QLineEdit("0.0")
+        self.edit_extraction = QLineEdit("93.08")
         form_layout.addWidget(self.edit_extraction, 3, 1)
 
         form_group.setLayout(form_layout)
         layout.addWidget(form_group)
 
         # Сетка для химического состава
+        # Создаем словарь соответствия ключей и тестовых значений
+        test_values = {
+            "ni_percent": "1.57",
+            "cu_percent": "1.58",
+            "pt_percent": "8.37",
+            "pd_percent": "33.62",
+            "sio2_percent": "9.80",
+            "c_percent": "9.86",
+            "se_percent": "1.49"
+        }
+
         chem_group = QGroupBox("Химический состав (%)")
         chem_layout = QGridLayout()
 
@@ -60,7 +71,12 @@ class InputScreen(QWidget):
         for i, (name, key) in enumerate(elements):
             row, col = divmod(i, 2)
             chem_layout.addWidget(QLabel(f"{name}:"), row, col * 2)
-            edit = QLineEdit("0")  # Значение по умолчанию
+
+            if hasattr(self, 'parent_unit'):
+                self.parent_unit.return_to_input()
+
+            val = test_values.get(key, "0")
+            edit = QLineEdit(val)
             chem_layout.addWidget(edit, row, col * 2 + 1)
             self.inputs[key] = edit
 
@@ -83,6 +99,7 @@ class InputScreen(QWidget):
         """)
         layout.addWidget(self.btn_start)
         layout.addStretch()
+
 
     def get_data(self):
         """Метод для сбора данных из всех полей для Recommender"""

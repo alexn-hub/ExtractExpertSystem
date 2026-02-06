@@ -140,11 +140,11 @@ class WorkScreen(QWidget):
         self.main_layout.addWidget(self.graph_group, 6)
 
         # Кривые
-        self.curve_tp1 = self.plot_widget.plot(pen=pg.mkPen('#FF5252', width=2), name="T1")
-        self.curve_tp2 = self.plot_widget.plot(pen=pg.mkPen('#69F0AE', width=2), name="T2")
-        self.curve_tg = self.plot_widget.plot(pen=pg.mkPen('#FFD740', width=2), name="T газа")
-        self.curve_ip = self.plot_widget.plot(pen=pg.mkPen('#448AFF', width=2), name="Ток")
-        self.curve_gk = self.plot_widget.plot(pen=pg.mkPen('#FFAB40', width=3), name="Расход")
+        self.curve_tp1 = self.plot_widget.plot(pen=pg.mkPen('#FF5252', width=2), name="T1", antialias=True)
+        self.curve_tp2 = self.plot_widget.plot(pen=pg.mkPen('#69F0AE', width=2), name="T2", antialias=True)
+        self.curve_tg = self.plot_widget.plot(pen=pg.mkPen('#FFD740', width=2), name="T газа", antialias=True)
+        self.curve_ip = self.plot_widget.plot(pen=pg.mkPen('#448AFF', width=2), name="Ток", antialias=True)
+        self.curve_gk = self.plot_widget.plot(pen=pg.mkPen('#FFAB40', width=3), name="Расход", antialias=True)
 
         self.v_line = pg.InfiniteLine(pos=0, angle=90, movable=False, pen=pg.mkPen('y', width=2, style=Qt.DashLine))
         self.plot_widget.addItem(self.v_line)
