@@ -143,6 +143,11 @@ class WorkScreen(QWidget):
         self.curve_tp1 = self.plot_widget.plot(pen=pg.mkPen('#FF5252', width=2), name="T1", antialias=True)
         self.curve_tp2 = self.plot_widget.plot(pen=pg.mkPen('#69F0AE', width=2), name="T2", antialias=True)
         self.curve_tg = self.plot_widget.plot(pen=pg.mkPen('#FFD740', width=2), name="T газа", antialias=True)
+        self.curve_opt_temp = self.plot_widget.plot(
+            pen=pg.mkPen(color='#2E7D32', width=2),
+            name="T регламент",
+            antialias=True
+        )
         self.curve_ip = self.plot_widget.plot(pen=pg.mkPen('#448AFF', width=2), name="Ток", antialias=True)
         self.curve_gk = self.plot_widget.plot(pen=pg.mkPen('#FFAB40', width=3), name="Расход", antialias=True)
 
@@ -166,6 +171,10 @@ class WorkScreen(QWidget):
         self.curve_tg.setData(x, history_df['temperature_3'].values)
         self.curve_ip.setData(x, history_df['current_value'].values)
         self.curve_gk.setData(x, history_df['acid_flow'].cumsum().values)
+        if 'optimal_temp' in history_df.columns:
+            # Используем x (ось времени) и .values (массив данных)
+            self.curve_opt_temp.setData(x, history_df['optimal_temp'].values)
+
         self.v_line.setValue(0)
         pulse_starts = history_df[(history_df['acid_flow'] > 1.0) & (history_df['acid_flow'].shift(1, fill_value=0) < 1.0)].index
         self.rec_table.setRowCount(len(pulse_starts))
