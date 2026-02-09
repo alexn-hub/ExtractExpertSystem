@@ -134,7 +134,7 @@ class SulfatizerWidget(QWidget):
         painter.drawLine(int(tx + tw), int(ty + th), int(tx + tw), int(ty))
 
         # 3. Индикаторы и стрелка
-        self.draw_indicator(painter, tx - 190, ty - 100, "Gк:", self.data["G"], "т")
+        self.draw_indicator(painter, tx - 190, ty - 65, "Gк:", self.data["G"], "т")
 
         arrow_color = QColor('#FFD740')
         painter.setPen(QPen(arrow_color, 3, Qt.SolidLine, Qt.RoundCap))  # Стрелка чуть тоньше

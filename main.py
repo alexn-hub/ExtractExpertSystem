@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Extract Expert System")
+        self.setWindowTitle("Extract Expert System. ДЕМО-версия")
         self.setMinimumSize(1200, 800)
 
         # Ресурсы

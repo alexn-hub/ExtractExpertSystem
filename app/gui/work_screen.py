@@ -9,8 +9,9 @@ from PyQt5.QtGui import QFont, QColor
 from app.gui.widgets import SulfatizerWidget
 
 class WorkScreen(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, unit_name="Неизвестно", parent=None):
         super().__init__(parent)
+        self.unit_name = unit_name
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_simulation)
         self.current_minute = 0
@@ -28,6 +29,9 @@ class WorkScreen(QWidget):
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(10, 5, 10, 10)
         self.main_layout.setSpacing(5)
+
+        # Создаем окно ИИ (пока скрытое)
+        self.ai_window = AIWindow(unit_name=self.unit_name, parent=self)
 
         # --- ВЕРХНЯЯ ПАНЕЛЬ (Заголовок слева) ---
         header_widget = QWidget()
@@ -118,6 +122,14 @@ class WorkScreen(QWidget):
         """)
         right_vbox.addWidget(self.val_extraction)
 
+        # НОВАЯ КНОПКА МОДЕЛИ
+        self.btn_toggle_ai = QPushButton("📊 МОДЕЛЬ ИИ")
+        self.btn_toggle_ai.setCheckable(True)  # <--- ДОБАВЬ ЭТУ СТРОКУ
+        self.btn_toggle_ai.setStyleSheet(
+            "background-color: #455A64; color: white; font-weight: bold; height: 35px; border-radius: 4px;")
+        self.btn_toggle_ai.clicked.connect(self.toggle_ai_window)
+        right_vbox.addWidget(self.btn_toggle_ai)
+
         top_layout.addWidget(self.left_group, stretch=2)
         top_layout.addWidget(self.right_group, stretch=1)
 
@@ -153,6 +165,45 @@ class WorkScreen(QWidget):
 
         self.v_line = pg.InfiniteLine(pos=0, angle=90, movable=False, pen=pg.mkPen('y', width=2, style=Qt.DashLine))
         self.plot_widget.addItem(self.v_line)
+
+    def toggle_ai_window(self):
+        """Метод для кнопки: открываем окно под таблицей поверх графика"""
+        if self.btn_toggle_ai.isChecked():
+            # 1. Получаем геометрию правой панели (где таблица и кнопка)
+            rect = self.right_group.geometry()
+
+            # 2. Определяем глобальную позицию правого нижнего угла этой панели
+            # Это как раз точка, где заканчивается таблица и начинается график
+            pos = self.mapToGlobal(rect.bottomRight())
+
+            # 3. Сдвигаем окно:
+            # x: вычитаем ширину окна, чтобы оно не ушло за край экрана
+            # y: вычитаем небольшое значение (например, 20-40 пикселей),
+            # чтобы оно слегка "заползло" под таблицу или прижалось к ней
+            x_coord = pos.x() - self.ai_window.width()
+            y_coord = pos.y() + 80 # Небольшой отступ вниз от границы группы
+
+            self.ai_window.move(x_coord, y_coord)
+            self.ai_window.show()
+            self.ai_window.raise_()  # Поверх всех слоев (графика в том числе)
+        else:
+            self.ai_window.hide()
+
+    # Добавь эти методы в любое место внутри класса WorkScreen
+    def showEvent(self, event):
+        super().showEvent(event)
+        # Показываем только если кнопка ВКЛЮЧЕНА
+        if hasattr(self, 'btn_toggle_ai') and self.btn_toggle_ai.isChecked():
+            self.ai_window.show()
+        else:
+            self.ai_window.hide()
+
+    def hideEvent(self, event):
+        """Вызывается автоматически, когда пользователь уходит на другую вкладку"""
+        super().hideEvent(event)
+        # Скрываем окно, но НЕ выключаем кнопку (чтобы оно вернулось при возврате)
+        if hasattr(self, 'ai_window'):
+            self.ai_window.hide()
 
     def request_new_batch(self):
         self.stop_simulation()
@@ -236,6 +287,37 @@ class WorkScreen(QWidget):
                 ltr=row.get('level_mixer', 0.0)
             )
 
+            # --- ЛОГИКА СОВЕТНИКА ---
+            future_idx = minute + 10
+            if future_idx < len(self.history_data):
+                future_row = self.history_data.iloc[future_idx]
+                future_t = future_row.get('temperature_1', 0.0)
+                future_opt = future_row.get('optimal_temp', 0.0)  # Это наша "min T протек. опер."
+
+                future_delta = future_t - future_opt
+                self.ai_window.lbl_prediction.setText(f"T+10 мин: {future_t:.1f} °C")
+
+                if future_delta < -2.0:
+                    # Температура в будущем упадет ниже технологического минимума
+                    status = "НИЖЕ РЕГЛАМЕНТА"
+                    color = "#1565C0"
+                    advice = f"<b>СОВЕТ:</b> Прогноз Т ниже минимума на {abs(future_delta):.1f}°C. Подайте 5т кислоты сейчас для компенсации падения."
+
+                elif future_delta > 7.0:
+                    # Ожидается чрезмерный перегрев
+                    status = "РИСК ПЕРЕГРЕВА"
+                    color = "#B71C1C"
+                    advice = "<b>СОВЕТ:</b> Ожидается резкий рост Т. Приостановите подачу кислоты и проверьте ток на электродах."
+
+                else:
+                    status = "В НОРМЕ"
+                    color = "#2E7D32"
+                    advice = "Температурный тренд соответствует оптимальному графику. Продолжайте текущий режим."
+
+                self.ai_window.lbl_title.setText(f"<b>{status}</b>")
+                self.ai_window.lbl_title.setStyleSheet(f"color: {color}; border: none;")
+                self.ai_window.lbl_advice.setText(advice)
+
     def stop_simulation(self):
         self.timer.stop()
         self.sulfatizer.stop_animation()
@@ -254,3 +336,55 @@ class WorkScreen(QWidget):
                     item.setBackground(QColor("white"))
         self.btn_run.setEnabled(True)
         self.btn_stop.setEnabled(False)
+
+
+class AIWindow(QFrame):
+    """Всплывающее окно ИИ-Советника"""
+
+    def __init__(self, unit_name, parent=None):
+        super().__init__(parent, Qt.Tool | Qt.WindowStaysOnTopHint)
+        self.unit_name = unit_name
+        self.setWindowTitle(f"ИИ-Модель: {unit_name}")  # Теперь в заголовке будет СФР-3 или СФР-4
+        self.setFixedSize(240, 200)
+        self.setStyleSheet("""
+            QFrame { 
+                background-color: #F8F9FA; 
+                border: 2px solid #1565C0; 
+                border-radius: 10px; 
+            }
+            QLabel { border: none; }
+        """)
+
+        layout = QVBoxLayout(self)
+        self.lbl_title = QLabel("<b>ПРОГНОЗ МОДЕЛИ</b>")
+        self.lbl_title.setAlignment(Qt.AlignCenter)
+
+        self.lbl_prediction = QLabel("Ожидание данных...")
+        self.lbl_prediction.setAlignment(Qt.AlignCenter)
+        self.lbl_prediction.setStyleSheet("font-size: 11pt; color: #1565C0;")
+
+        self.lbl_advice = QLabel("Запустите процесс для анализа")
+        self.lbl_advice.setWordWrap(True)
+        self.lbl_advice.setAlignment(Qt.AlignCenter)
+        self.lbl_advice.setStyleSheet("background: white; padding: 5px; border-radius: 5px;")
+
+        layout.addWidget(self.lbl_title)
+        layout.addWidget(self.lbl_prediction)
+        layout.addWidget(self.lbl_advice)
+        layout.addStretch()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.drag_pos = event.globalPos() - self.frameGeometry().topLeft()
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.move(event.globalPos() - self.drag_pos)
+            event.accept()
+
+    def closeEvent(self, event):
+        """Сообщаем родителю, что окно закрыто крестиком"""
+        if hasattr(self.parent(), 'btn_toggle_ai'):
+            self.parent().btn_toggle_ai.setChecked(False)
+        event.accept()

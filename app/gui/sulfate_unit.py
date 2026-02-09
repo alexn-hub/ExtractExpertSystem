@@ -26,9 +26,9 @@ class SulfateUnit(QWidget):
         self.input_page.combo_sfr.setCurrentText(unit_name)
         self.input_page.combo_sfr.setEnabled(False)  # Чтобы нельзя было поменять СФР во вкладке
 
-        # 2. Создаем экран работы
-        self.work_page = WorkScreen()
-        self.work_page.parent_unit = self  # Чтобы страница работы могла позвать метод возврата
+        # 2. Создаем экран работы и передаем имя юнита
+        self.work_page = WorkScreen(unit_name=self.unit_name)
+        self.work_page.parent_unit = self
 
         # Добавляем их в стэк
         self.stack.addWidget(self.input_page)  # индекс 0
