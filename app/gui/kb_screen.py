@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QLabel, QComboBox, QPushButton, QFrame
 )
 from PyQt5.QtCore import Qt
-
+from app.gui.import_dialog import ImportDataDialog
 
 class KnowledgeBaseScreen(QWidget):
     def __init__(self, db_manager, parent=None):
@@ -30,9 +30,23 @@ class KnowledgeBaseScreen(QWidget):
         self.filter_extract = QComboBox()
         self.filter_extract.addItems(["Любое извлечение", "> 90%", "> 95%", "> 98%"])
 
-        btn_search = QPushButton("🔍 ОБНОВИТЬ")
-        btn_search.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold; padding: 5px 15px;")
-        btn_search.clicked.connect(self.load_batches)
+        # Фиксированная ширина для кнопок, чтобы они были одинаковыми
+        btn_width = 170
+        btn_height = 40
+
+        #Кнопка выгрузки данных из БЗ
+        self.btn_search = QPushButton("🔍 ОБНОВИТЬ")
+        self.btn_search.setFixedWidth(btn_width)
+        self.btn_search.setFixedHeight(btn_height)
+        self.btn_search.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold; padding: 5px 15px;")
+        self.btn_search.clicked.connect(self.load_batches)
+
+        # Кнопка Импорт данных
+        self.btn_import = QPushButton("➕ ИМПОРТ ДАННЫХ")
+        self.btn_import.setFixedWidth(btn_width)
+        self.btn_import.setFixedHeight(btn_height)
+        self.btn_import.setStyleSheet("background-color: #1565C0; color: white; font-weight: bold; padding: 5px 15px;")
+        self.btn_import.clicked.connect(self.open_import_dialog)
 
         filter_layout.addWidget(QLabel("Аппарат:"))
         filter_layout.addWidget(self.filter_sfr)
@@ -41,7 +55,8 @@ class KnowledgeBaseScreen(QWidget):
         filter_layout.addWidget(QLabel("Эффективность:"))
         filter_layout.addWidget(self.filter_extract)
         filter_layout.addStretch()
-        filter_layout.addWidget(btn_search)
+        filter_layout.addWidget(self.btn_search)
+        filter_layout.addWidget(self.btn_import)
         filter_group.setLayout(filter_layout)
         layout.addWidget(filter_group)
 
@@ -76,9 +91,9 @@ class KnowledgeBaseScreen(QWidget):
         # Выключаем нумерацию в нижней таблице, как ты просил
         self.table_process.verticalHeader().setVisible(False)
 
-        self.table_process.setColumnCount(5)  # Убрали колонку №
+        self.table_process.setColumnCount(6)
         self.table_process.setHorizontalHeaderLabels([
-            "Тр 1, °C", "Тр 2, °C", "Т газа, °C", "Ток, А", "Кислота, т"
+            "Время", "Т раст. 1", "Т раст. 2", "Т газа", "Ток", "Расход кисл."
         ])
 
         self.table_process.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
@@ -142,6 +157,12 @@ class KnowledgeBaseScreen(QWidget):
 
             row_idx += 1
 
+    def open_import_dialog(self):
+        from app.gui.import_dialog import ImportDataDialog  # Импорт внутри метода, чтобы избежать циклов
+        dialog = ImportDataDialog(self.db, self)
+        if dialog.exec_():
+            self.load_batches()  # Обновляем таблицу после добавления
+
     def on_batch_selected(self):
         selected = self.table_batches.selectedItems()
         if not selected:
@@ -155,8 +176,9 @@ class KnowledgeBaseScreen(QWidget):
         for i, row in df.iterrows():
             self.table_process.insertRow(i)
             # Сразу температурные данные (без колонки №)
-            self.table_process.setItem(i, 0, QTableWidgetItem(f"{row.get('temperature_1', 0):.1f}"))
-            self.table_process.setItem(i, 1, QTableWidgetItem(f"{row.get('temperature_2', 0):.1f}"))
-            self.table_process.setItem(i, 2, QTableWidgetItem(f"{row.get('temperature_3', 0):.1f}"))
-            self.table_process.setItem(i, 3, QTableWidgetItem(f"{int(row.get('current_value', 0))}"))
-            self.table_process.setItem(i, 4, QTableWidgetItem(f"{row.get('acid_flow', 0):.2f}"))
+            self.table_process.setItem(i, 0, QTableWidgetItem(str(row.get('timestamp', ''))))
+            self.table_process.setItem(i, 1, QTableWidgetItem(f"{row.get('temperature_1', 0):.1f}"))
+            self.table_process.setItem(i, 2, QTableWidgetItem(f"{row.get('temperature_2', 0):.1f}"))
+            self.table_process.setItem(i, 3, QTableWidgetItem(f"{row.get('temperature_3', 0):.1f}"))
+            self.table_process.setItem(i, 4, QTableWidgetItem(f"{row.get('current_value', 0):.3f}"))
+            self.table_process.setItem(i, 5, QTableWidgetItem(f"{row.get('acid_flow', 0):.2f}"))

@@ -91,61 +91,27 @@ class DatabaseManager:
             self.connection.execute("PRAGMA foreign_keys = ON")
         return self.connection
 
-    def add_batch(self, batch_data: Dict[str, Any]) -> bool:
-        """Добавление новой партии в БД"""
+    def add_batch(self, batch_data: Dict):
+        """Добавление информации о партии в таблицу batches"""
         try:
             with self.get_connection() as conn:
-                cursor = conn.cursor()
-
-                # Подготовка данных
-                required_fields = [
-                    'batch_id', 'extraction_date', 'sulfate_number',
-                    'sample_weight', 'extraction_percent'
-                ]
-
-                for field in required_fields:
-                    if field not in batch_data:
-                        raise ValueError(f"Отсутствует обязательное поле: {field}")
-
-                # SQL запрос
-                sql = '''
-                INSERT OR REPLACE INTO batches 
-                (batch_id, extraction_date, sulfate_number, sample_weight,
-                 ni_percent, cu_percent, pt_percent, pd_percent,
-                 sio2_percent, c_percent, se_percent, extraction_percent,
-                 process_duration, quality_rating, operator_id, notes, is_good)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                '''
-
-                params = (
-                    batch_data['batch_id'],
-                    batch_data['extraction_date'],
-                    batch_data['sulfate_number'],
-                    batch_data['sample_weight'],
-                    batch_data.get('ni_percent', 0),
-                    batch_data.get('cu_percent', 0),
-                    batch_data.get('pt_percent', 0),
-                    batch_data.get('pd_percent', 0),
-                    batch_data.get('sio2_percent', 0),
-                    batch_data.get('c_percent', 0),
-                    batch_data.get('se_percent', 0),
-                    batch_data['extraction_percent'],
-                    batch_data.get('process_duration'),
-                    batch_data.get('quality_rating'),
-                    batch_data.get('operator_id'),
-                    batch_data.get('notes'),
-                    batch_data.get('is_good', True)
+                query = '''
+                INSERT OR REPLACE INTO batches (
+                    batch_id, extraction_date, sulfate_number, sample_weight,
+                    ni_percent, cu_percent, pt_percent, pd_percent,
+                    sio2_percent, c_percent, se_percent, extraction_percent
+                ) VALUES (
+                    :batch_id, :extraction_date, :sulfate_number, :sample_weight,
+                    :ni_percent, :cu_percent, :pt_percent, :pd_percent,
+                    :sio2_percent, :c_percent, :se_percent, :extraction_percent
                 )
-
-                cursor.execute(sql, params)
+                '''
+                conn.execute(query, batch_data)
                 conn.commit()
-
-                logger.info(f"Партия {batch_data['batch_id']} добавлена в БД")
-                return True
-
+                logger.info(f"Партия {batch_data['batch_id']} успешно сохранена/обновлена.")
         except Exception as e:
-            logger.error(f"Ошибка добавления партии: {e}")
-            return False
+            logger.error(f"Ошибка сохранения партии {batch_data.get('batch_id')}: {e}")
+            raise
 
     def get_all_batches(self):
         """Возвращает список всех партий из базы для анализа рекомендателем"""

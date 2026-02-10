@@ -30,6 +30,9 @@ psycopg2-binary>=2.9.0
 # Для MS SQL Server:
 pyodbc>=5.0.0
 
+# Для работы с xlx файлами
+openpyxl>=3.1.0
+
 # Дополнительные
 python-dateutil>=2.8.0
 pytz>=2023.0
