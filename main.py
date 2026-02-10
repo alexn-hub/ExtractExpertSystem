@@ -6,6 +6,7 @@ from app.core.recommender import ProcessRecommender
 from app.gui.input_screen import InputScreen
 from app.gui.work_screen import WorkScreen
 from app.gui.sulfate_unit import SulfateUnit
+from app.gui.kb_screen import KnowledgeBaseScreen
 
 # Добавляем путь к проекту в sys.path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -24,15 +25,27 @@ class MainWindow(QMainWindow):
         # Создаем виджет вкладок
         self.tabs = QTabWidget()
 
-        # Создаем два независимых аппарата
-        # У каждого будет свой стэк экранов, свой реактор и свои графики
+        # 1. Создаем аппараты
         self.unit3 = SulfateUnit("СФР-3", self.recommender, self.db)
         self.unit4 = SulfateUnit("СФР-4", self.recommender, self.db)
 
+        # 2. Создаем экран Базы Знаний
+        self.kb_screen = KnowledgeBaseScreen(self.db)
+
+        # Добавляем три вкладки
         self.tabs.addTab(self.unit3, "СФР-3")
         self.tabs.addTab(self.unit4, "СФР-4")
+        self.tabs.addTab(self.kb_screen, "БАЗА ЗНАНИЙ")
 
         self.setCentralWidget(self.tabs)
+
+        # Обновляем БЗ при переключении на вкладку
+        self.tabs.currentChanged.connect(self.handle_tab_change)
+
+    def handle_tab_change(self, index):
+        # Если переключились на 2-ю вкладку (БЗ), обновляем таблицу
+        if index == 2:
+            self.kb_screen.load_batches()
 
     def switch_to_sfr(self):
         sender = self.sender()
