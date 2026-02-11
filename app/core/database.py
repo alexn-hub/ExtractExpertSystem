@@ -228,6 +228,21 @@ class DatabaseManager:
             logger.error(f"Ошибка выполнения запроса: {e}")
             raise
 
+    def delete_batch(self, batch_id: str):
+        """Полное удаление партии и всех её процессных данных"""
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                # Удаляем данные процесса
+                cursor.execute("DELETE FROM process_data WHERE batch_id = ?", (batch_id,))
+                # Удаляем саму партию
+                cursor.execute("DELETE FROM batches WHERE batch_id = ?", (batch_id,))
+                conn.commit()
+                return True
+        except Exception as e:
+            logger.error(f"Ошибка при удалении партии {batch_id}: {e}")
+            return False
+
     def close(self):
         """Закрытие соединения с БД"""
         if self.connection:

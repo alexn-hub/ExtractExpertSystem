@@ -1,0 +1,29 @@
+2026-02-11 12:59:04 - expert_system - INFO - База данных инициализирована
+2026-02-11 12:59:49 - expert_system - INFO - База данных инициализирована
+2026-02-11 13:00:13 - expert_system - INFO - База данных инициализирована
+2026-02-11 13:02:04 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-11 13:02:04 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-11 13:02:04 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-11 13:02:04 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-11 13:02:04 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-11 13:02:04 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-11 13:02:04 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-11 13:02:04 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-11 13:02:04 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-11 14:31:39 - expert_system - INFO - Партия ПП1 успешно сохранена/обновлена.
+2026-02-11 14:31:39 - expert_system - INFO - Добавлено 19719 записей для партии ПП1
+2026-02-11 14:32:39 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-11 14:32:39 - expert_system.recommender - INFO - Входные данные: Масса=777.0кг, Ni=51.0%, Pd=51.0%
+2026-02-11 14:32:39 - expert_system.recommender - INFO - Всего в БД: 8
+2026-02-11 14:32:39 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 7
+2026-02-11 14:32:39 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 0
+2026-02-11 14:32:39 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-11 14:32:39 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: ПП1 (Извлечение: 99.0%)
+2026-02-11 14:32:39 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-11 14:47:40 - expert_system - INFO - База данных инициализирована
+2026-02-11 14:48:48 - expert_system - INFO - Партия тт2 успешно сохранена/обновлена.
+2026-02-11 14:48:48 - expert_system - INFO - Добавлено 19719 записей для партии тт2
+2026-02-11 14:49:55 - expert_system - INFO - База данных инициализирована
+2026-02-11 14:54:26 - expert_system - INFO - База данных инициализирована
+2026-02-11 15:45:15 - expert_system - INFO - База данных инициализирована
+2026-02-11 15:45:36 - expert_system - INFO - База данных инициализирована

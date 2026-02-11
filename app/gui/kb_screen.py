@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTableWidget,
     QTableWidgetItem, QHeaderView, QGroupBox, QLineEdit,
-    QLabel, QComboBox, QPushButton, QFrame
+    QLabel, QComboBox, QPushButton, QFrame, QMessageBox
 )
 from PyQt5.QtCore import Qt
 from app.gui.import_dialog import ImportDataDialog
@@ -48,6 +48,23 @@ class KnowledgeBaseScreen(QWidget):
         self.btn_import.setStyleSheet("background-color: #1565C0; color: white; font-weight: bold; padding: 5px 15px;")
         self.btn_import.clicked.connect(self.open_import_dialog)
 
+        # Кнопка Удалить ---
+        self.btn_delete = QPushButton("УДАЛИТЬ ПАРТИЮ")
+        self.btn_delete.setFixedWidth(btn_width)
+        self.btn_delete.setFixedHeight(btn_height)
+        self.btn_delete.setStyleSheet("""
+                QPushButton {
+                    background-color: #C62828; 
+                    color: white; 
+                    font-weight: bold; 
+                    padding: 5px 15px;
+                }
+                QPushButton:hover {
+                    background-color: #D32F2F;
+                }
+            """)
+        self.btn_delete.clicked.connect(self.delete_selected_batch)
+
         filter_layout.addWidget(QLabel("Аппарат:"))
         filter_layout.addWidget(self.filter_sfr)
         filter_layout.addWidget(QLabel("Масса от:"))
@@ -57,6 +74,7 @@ class KnowledgeBaseScreen(QWidget):
         filter_layout.addStretch()
         filter_layout.addWidget(self.btn_search)
         filter_layout.addWidget(self.btn_import)
+        filter_layout.addWidget(self.btn_delete)
         filter_group.setLayout(filter_layout)
         layout.addWidget(filter_group)
 
@@ -182,3 +200,28 @@ class KnowledgeBaseScreen(QWidget):
             self.table_process.setItem(i, 3, QTableWidgetItem(f"{row.get('temperature_3', 0):.1f}"))
             self.table_process.setItem(i, 4, QTableWidgetItem(f"{row.get('current_value', 0):.3f}"))
             self.table_process.setItem(i, 5, QTableWidgetItem(f"{row.get('acid_flow', 0):.2f}"))
+
+    def delete_selected_batch(self):
+        selected = self.table_batches.selectedItems()
+        if not selected:
+            QMessageBox.warning(self, "Внимание", "Сначала выберите партию в таблице!")
+            return
+
+        # Берем ID партии из первой колонки выделенной строки
+        row = selected[0].row()
+        batch_id = self.table_batches.item(row, 0).text()
+
+        # Спрашиваем подтверждение (важно, чтобы не удалить случайно!)
+        reply = QMessageBox.question(
+            self, 'Подтверждение',
+            f"Вы уверены, что хотите полностью удалить партию {batch_id}?\nЭто действие нельзя отменить.",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            if self.db.delete_batch(batch_id):
+                QMessageBox.information(self, "Успех", f"Партия {batch_id} удалена.")
+                self.load_batches()  # Обновляем список партий
+                self.table_process.setRowCount(0)  # Очищаем нижнюю таблицу
+            else:
+                QMessageBox.critical(self, "Ошибка", "Не удалось удалить данные из базы.")

@@ -138,6 +138,15 @@ class ImportDataDialog(QDialog):
             batch_id = self.edit_id.text().strip()
             if not batch_id: raise ValueError("Укажите ID партии!")
 
+            # --- Вспомогательная функция для валидации ---
+            def clean_and_validate(widget, name, is_percent=True):
+                val_str = widget.text().replace(',', '.')
+                if not val_str: return 0.0
+                val = float(val_str)
+                if is_percent and not (0 <= val <= 100):
+                    raise ValueError(f"Поле '{name}' должно быть в диапазоне от 0 до 100!")
+                return val
+
             # 1. Чтение данных
             df = pd.read_csv(self.filepath) if self.filepath.endswith('.csv') else pd.read_excel(self.filepath)
 
@@ -154,61 +163,55 @@ class ImportDataDialog(QDialog):
             # Создаем рабочий DataFrame
             process_df = df[list(rename_map.keys())].rename(columns=rename_map)
 
-            # --- ЖЕСТКАЯ ОЧИСТКА ДАННЫХ ---
-
-            # 1. Сначала превращаем всё в строки и убираем лишние пробелы по краям
+            # --- ЖЕСТКАЯ ОЧИСТКА ДАННЫХ (ТВОЙ КОД БЕЗ ИЗМЕНЕНИЙ) ---
             process_df['timestamp'] = process_df['timestamp'].astype(str).str.strip()
-
-            # 2. Получаем имя колонки, которое пользователь выбрал в интерфейсе
             excel_time_col_name = self.combos['timestamp'].currentText().strip()
-
-            # 3. УДАЛЯЕМ СТРОКУ-ДУБЛИКАТ:
-            # Оставляем только те строки, где значение НЕ совпадает с заголовком
-            # Добавляем проверку на "название колонки" и на само слово "время" (на всякий случай)
             process_df = process_df[
                 (process_df['timestamp'] != excel_time_col_name) &
                 (process_df['timestamp'].str.lower() != "время")
                 ]
-
-            # 4. Удаляем пустые строки, если они есть
             process_df = process_df.dropna(subset=['timestamp'])
-            process_df = process_df[process_df['timestamp'] != "nan"]  # Pandas при astype(str) превращает null в "nan"
+            process_df = process_df[process_df['timestamp'] != "nan"]
 
-            # 5. Числовые данные: теперь, когда мусорный заголовок удален,
-            # приводим всё к float. Всё, что не число (вдруг там еще какой текст), станет 0.0
             float_cols = ['temperature_1', 'temperature_2', 'temperature_3', 'current_value', 'acid_flow']
             for col in float_cols:
                 if col in process_df.columns:
                     process_df[col] = pd.to_numeric(process_df[col], errors='coerce').fillna(0.0)
                 else:
                     process_df[col] = 0.0
-
             # --- КОНЕЦ ОЧИСТКИ ---
 
-            # 3. Сохранение партии (batches)
+            # 3. Сохранение партии (batches) с проверками
+            sfr_val = self.edit_sfr.text().strip()
+            if sfr_val not in ['3', '4']:
+                raise ValueError("Номер СФР должен быть только 3 или 4!")
+
             batch_data = {
                 'batch_id': batch_id,
                 'extraction_date': pd.Timestamp.now().strftime('%Y-%m-%d'),
-                'sulfate_number': int(self.edit_sfr.text() or 3),
-                'sample_weight': float(self.edit_mass.text() or 0),
-                'extraction_percent': float(self.edit_ext.text() or 0)
+                'sulfate_number': int(sfr_val),
+                'sample_weight': clean_and_validate(self.edit_mass, "Масса", is_percent=False),
+                'extraction_percent': clean_and_validate(self.edit_ext, "Извлечение")
             }
-            # Добавляем химию (если поля созданы)
+
+            # Добавляем химию с проверкой на 0-100%
             if hasattr(self, 'chem_inputs'):
+                chem_names = {'ni_percent': 'Ni', 'cu_percent': 'Cu', 'pt_percent': 'Pt',
+                              'pd_percent': 'Pd', 'sio2_percent': 'SiO2', 'c_percent': 'C', 'se_percent': 'Se'}
                 for key, edit in self.chem_inputs.items():
-                    batch_data[key] = float(edit.text() or 0)
+                    batch_data[key] = clean_and_validate(edit, chem_names.get(key, key))
 
             self.db.add_batch(batch_data)
 
             # 4. Сохранение процесса (process_data)
-            # Переводим timestamp в строку "как есть", чтобы не терять дату
             process_df['timestamp'] = process_df['timestamp'].astype(str)
-
             records = process_df.to_dict('records')
             self.db.add_process_data(batch_id, records)
 
             QMessageBox.information(self, "Готово", f"Успешно загружено {len(records)} строк")
             self.accept()
 
+        except ValueError as ve:
+            QMessageBox.warning(self, "Ошибка в данных", str(ve))
         except Exception as e:
             QMessageBox.critical(self, "Ошибка сохранения", f"Детали: {e}")
