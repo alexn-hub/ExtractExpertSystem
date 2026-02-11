@@ -106,12 +106,13 @@ class KnowledgeBaseScreen(QWidget):
         # --- ОБЛАСТЬ 3: ТАБЛИЦА PROCESS_DATA (НИЖНЯЯ) ---
         layout.addWidget(QLabel("<b>Подробные параметры тех. процесса (process_data):</b>"))
         self.table_process = QTableWidget()
-        # Выключаем нумерацию в нижней таблице, как ты просил
         self.table_process.verticalHeader().setVisible(False)
 
-        self.table_process.setColumnCount(6)
+        # Увеличиваем количество колонок до 9 (или 10, если хочешь видеть СФР и там)
+        self.table_process.setColumnCount(9)
         self.table_process.setHorizontalHeaderLabels([
-            "Время", "Т раст. 1", "Т раст. 2", "Т газа", "Ток", "Расход кисл."
+            "Время", "Т раст. 1", "Т раст. 2", "Т газа", "Ток", "Расход кисл.",
+            "Уров. микс.", "Полож. электр.", "Опт. темп."
         ])
 
         self.table_process.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
@@ -193,13 +194,19 @@ class KnowledgeBaseScreen(QWidget):
         self.table_process.setRowCount(0)
         for i, row in df.iterrows():
             self.table_process.insertRow(i)
-            # Сразу температурные данные (без колонки №)
+
+            # 1-6 колонки (базовые)
             self.table_process.setItem(i, 0, QTableWidgetItem(str(row.get('timestamp', ''))))
             self.table_process.setItem(i, 1, QTableWidgetItem(f"{row.get('temperature_1', 0):.1f}"))
             self.table_process.setItem(i, 2, QTableWidgetItem(f"{row.get('temperature_2', 0):.1f}"))
             self.table_process.setItem(i, 3, QTableWidgetItem(f"{row.get('temperature_3', 0):.1f}"))
             self.table_process.setItem(i, 4, QTableWidgetItem(f"{row.get('current_value', 0):.3f}"))
             self.table_process.setItem(i, 5, QTableWidgetItem(f"{row.get('acid_flow', 0):.2f}"))
+
+            # 7-9 колонки (новые параметры)
+            self.table_process.setItem(i, 6, QTableWidgetItem(f"{row.get('level_mixer', 0):.1f}"))
+            self.table_process.setItem(i, 7, QTableWidgetItem(f"{row.get('electrodes_pos', 0):.1f}"))
+            self.table_process.setItem(i, 8, QTableWidgetItem(f"{row.get('optimal_temp', 0):.1f}"))
 
     def delete_selected_batch(self):
         selected = self.table_batches.selectedItems()

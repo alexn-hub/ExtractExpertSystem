@@ -22,7 +22,7 @@ class DatabaseManager:
         """Инициализация структуры базы данных"""
         try:
             with self.get_connection() as conn:
-                # Таблица 1: Методические данные партий - ПОЛНАЯ СТРУКТУРА
+                # Таблица 1: Методические данные партий (заголовки)
                 conn.execute('''
                 CREATE TABLE IF NOT EXISTS batches (
                     batch_id TEXT PRIMARY KEY,
@@ -46,36 +46,32 @@ class DatabaseManager:
                 )
                 ''')
 
-                # Таблица 2: Процессные данные
+                # Таблица 2: Процессные данные (динамика)
                 conn.execute('''
-                                CREATE TABLE IF NOT EXISTS process_data (
-                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                    batch_id TEXT NOT NULL,
-                                    timestamp DATETIME NOT NULL,
-                                    temperature_1 REAL,
-                                    temperature_2 REAL,
-                                    temperature_3 REAL,
-                                    acid_flow REAL,
-                                    current_value REAL,
-                                    electrodes_pos REAL DEFAULT 0,
-                                    level_mixer REAL DEFAULT 0,
-                                    FOREIGN KEY (batch_id) REFERENCES batches(batch_id)
-                                )
-                                ''')
-
-                # Индексы для ускорения поиска
-                conn.execute('''
-                CREATE INDEX IF NOT EXISTS idx_batch_composition 
-                ON batches(ni_percent, cu_percent, pt_percent, pd_percent)
+                CREATE TABLE IF NOT EXISTS process_data (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    batch_id TEXT NOT NULL,
+                    sulfate_number INTEGER, 
+                    timestamp TEXT NOT NULL,
+                    temperature_1 REAL,
+                    temperature_2 REAL,
+                    temperature_3 REAL,
+                    acid_flow REAL,
+                    current_value REAL,
+                    electrodes_pos REAL DEFAULT 0,
+                    level_mixer REAL DEFAULT 0,
+                    optimal_temp REAL DEFAULT 0,
+                    FOREIGN KEY (batch_id) REFERENCES batches(batch_id)
+                )
                 ''')
 
-                conn.execute('''
-                CREATE INDEX IF NOT EXISTS idx_process_batch_time 
-                ON process_data(batch_id, timestamp)
-                ''')
+                # Индексы для ускорения работы
+                conn.execute(
+                    'CREATE INDEX IF NOT EXISTS idx_batch_composition ON batches(ni_percent, cu_percent, pt_percent, pd_percent)')
+                conn.execute('CREATE INDEX IF NOT EXISTS idx_process_batch_time ON process_data(batch_id, timestamp)')
+                conn.execute('CREATE INDEX IF NOT EXISTS idx_process_sfr ON process_data(sulfate_number)')
 
-                logger.info("База данных инициализирована")
-
+                logger.info("База данных инициализирована: sulfate_number добавлен в процессные данные")
         except Exception as e:
             logger.error(f"Ошибка инициализации БД: {e}")
             raise
@@ -94,6 +90,9 @@ class DatabaseManager:
     def add_batch(self, batch_data: Dict):
         """Добавление информации о партии в таблицу batches"""
         try:
+            # Чистка от NaN (превращаем в None для SQLite NULL)
+            clean_data = {k: (None if pd.isna(v) or v == "" else v) for k, v in batch_data.items()}
+
             with self.get_connection() as conn:
                 query = '''
                 INSERT OR REPLACE INTO batches (
@@ -106,9 +105,9 @@ class DatabaseManager:
                     :sio2_percent, :c_percent, :se_percent, :extraction_percent
                 )
                 '''
-                conn.execute(query, batch_data)
+                conn.execute(query, clean_data)
                 conn.commit()
-                logger.info(f"Партия {batch_data['batch_id']} успешно сохранена/обновлена.")
+                logger.info(f"Партия {clean_data['batch_id']} успешно сохранена.")
         except Exception as e:
             logger.error(f"Ошибка сохранения партии {batch_data.get('batch_id')}: {e}")
             raise
@@ -127,41 +126,39 @@ class DatabaseManager:
             print(f"Ошибка при получении всех партий: {e}")
             return []
 
-    def add_process_data(self, batch_id: str, process_records: List[Dict]) -> bool:
-        """Добавление процессных данных для партии"""
+    def add_process_data(self, batch_id: str, sulfate_number: int, process_records: List[Dict]) -> bool:
         try:
             with self.get_connection() as conn:
                 cursor = conn.cursor()
 
-                # 1. Добавляем колонки в SQL запрос
                 sql = '''
                 INSERT INTO process_data 
-                (batch_id, timestamp, temperature_1, temperature_2, 
-                 temperature_3, acid_flow, current_value, electrodes_pos, level_mixer)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (batch_id, sulfate_number, timestamp, temperature_1, temperature_2, 
+                 temperature_3, acid_flow, current_value, electrodes_pos, level_mixer, optimal_temp)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 '''
 
                 for record in process_records:
-                    # 2. Добавляем значения в параметры (используем .get() для безопасности)
                     params = (
                         batch_id,
-                        record['timestamp'],
-                        record.get('temperature_1'),
-                        record.get('temperature_2'),
-                        record.get('temperature_3'),
-                        record.get('acid_flow'),
-                        record.get('current_value'),
-                        record.get('electrodes_pos', 0.0),  # Новое поле
-                        record.get('level_mixer', 0.0)  # Новое поле
+                        sulfate_number,
+                        record.get('timestamp'),
+                        record.get('temperature_1', 0.0),
+                        record.get('temperature_2', 0.0),
+                        record.get('temperature_3', 0.0),
+                        record.get('acid_flow', 0.0),
+                        record.get('current_value', 0.0),
+                        record.get('electrodes_pos', 0.0),
+                        record.get('level_mixer', 0.0),
+                        record.get('optimal_temp', 0.0)
                     )
                     cursor.execute(sql, params)
 
                 conn.commit()
-                logger.info(f"Добавлено {len(process_records)} записей для партии {batch_id}")
+                logger.info(f"Добавлено {len(process_records)} записей для партии {batch_id} (СФР-{sulfate_number})")
                 return True
-
         except Exception as e:
-            logger.error(f"Ошибка добавления процессных данных: {e}")
+            logger.error(f"Ошибка добавления процессных данных для {batch_id}: {e}")
             return False
 
     def find_similar_batches(self, sample_data: Dict[str, float],

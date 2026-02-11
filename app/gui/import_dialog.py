@@ -82,7 +82,7 @@ class ImportDataDialog(QDialog):
         scroll.setWidget(content_widget)
         main_layout.addWidget(scroll)
 
-        self.btn_save = QPushButton("✅ ЗАГРУЗИТЬ ВСЁ В БАЗУ")
+        self.btn_save = QPushButton("✅ ЗАГРУЗИТЬ В БАЗУ")
         self.btn_save.setFixedHeight(45)
         self.btn_save.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold;")
         self.btn_save.clicked.connect(self.save_data)
@@ -96,7 +96,10 @@ class ImportDataDialog(QDialog):
             "temperature_2": "Т раствора 2 (°C)",
             "temperature_3": "Т газа (°C)",
             "current_value": "Ток (А)",
-            "acid_flow": "Расход кислоты (л/мин)"
+            "acid_flow": "Расход кислоты (т)",
+            "level_mixer": "Уровень миксера",
+            "electrodes_pos": "Позиция электрода",  # Исправлено
+            "optimal_temp": "Опт. температура"
         }
         self.combos = {}
 
@@ -163,9 +166,10 @@ class ImportDataDialog(QDialog):
             # Создаем рабочий DataFrame
             process_df = df[list(rename_map.keys())].rename(columns=rename_map)
 
-            # --- ЖЕСТКАЯ ОЧИСТКА ДАННЫХ (ТВОЙ КОД БЕЗ ИЗМЕНЕНИЙ) ---
+            # --- ЖЕСТКАЯ ОЧИСТКА ДАННЫХ ---
             process_df['timestamp'] = process_df['timestamp'].astype(str).str.strip()
             excel_time_col_name = self.combos['timestamp'].currentText().strip()
+
             process_df = process_df[
                 (process_df['timestamp'] != excel_time_col_name) &
                 (process_df['timestamp'].str.lower() != "время")
@@ -173,7 +177,13 @@ class ImportDataDialog(QDialog):
             process_df = process_df.dropna(subset=['timestamp'])
             process_df = process_df[process_df['timestamp'] != "nan"]
 
-            float_cols = ['temperature_1', 'temperature_2', 'temperature_3', 'current_value', 'acid_flow']
+            # РАСШИРЕННЫЙ СПИСОК СТОЛБЦОВ: добавили level_mixer, electrode_pos, optimal_temp
+            float_cols = [
+                'temperature_1', 'temperature_2', 'temperature_3',
+                'current_value', 'acid_flow',
+                'level_mixer', 'electrodes_pos', 'optimal_temp'  # Исправлено
+            ]
+
             for col in float_cols:
                 if col in process_df.columns:
                     process_df[col] = pd.to_numeric(process_df[col], errors='coerce').fillna(0.0)
@@ -186,10 +196,12 @@ class ImportDataDialog(QDialog):
             if sfr_val not in ['3', '4']:
                 raise ValueError("Номер СФР должен быть только 3 или 4!")
 
+            sfr_int = int(sfr_val)
+
             batch_data = {
                 'batch_id': batch_id,
                 'extraction_date': pd.Timestamp.now().strftime('%Y-%m-%d'),
-                'sulfate_number': int(sfr_val),
+                'sulfate_number': sfr_int,
                 'sample_weight': clean_and_validate(self.edit_mass, "Масса", is_percent=False),
                 'extraction_percent': clean_and_validate(self.edit_ext, "Извлечение")
             }
@@ -206,9 +218,11 @@ class ImportDataDialog(QDialog):
             # 4. Сохранение процесса (process_data)
             process_df['timestamp'] = process_df['timestamp'].astype(str)
             records = process_df.to_dict('records')
-            self.db.add_process_data(batch_id, records)
 
-            QMessageBox.information(self, "Готово", f"Успешно загружено {len(records)} строк")
+            # ПЕРЕДАЕМ sfr_int вторым аргументом, как обновили в database.py
+            self.db.add_process_data(batch_id, sfr_int, records)
+
+            QMessageBox.information(self, "Готово", f"Успешно загружено {len(records)} строк для СФР-{sfr_int}")
             self.accept()
 
         except ValueError as ve:
