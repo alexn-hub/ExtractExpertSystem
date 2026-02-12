@@ -1,5 +1,20 @@
 import sys
 import os
+
+from pathlib import Path
+
+# --- КРИТИЧЕСКИЙ БЛОК ДЛЯ СБОРКИ EXE ---
+if getattr(sys, 'frozen', False):
+    # Если запущено как скомпилированный EXE
+    basedir = sys._MEIPASS
+else:
+    # Если запущено как обычный скрипт Python
+    basedir = os.path.dirname(os.path.abspath(__file__))
+
+# Добавляем пути, чтобы Python видел папку app
+sys.path.append(basedir)
+# ---------------------------------------
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QMessageBox, QTabWidget
 from app.core.database import DatabaseManager
 from app.core.recommender import ProcessRecommender
