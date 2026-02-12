@@ -1,26 +1,50 @@
 import pandas as pd
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QGridLayout, QLineEdit,
-    QPushButton, QLabel, QFileDialog, QMessageBox, QGroupBox, QHBoxLayout, QComboBox, QScrollArea, QWidget
+    QPushButton, QLabel, QFileDialog, QMessageBox, QGroupBox, QHBoxLayout, QComboBox, QScrollArea, QWidget,
+    QTabWidget, QApplication
 )
 from PyQt5.QtCore import Qt
+from app.core.data_importer import ExternalDBImporter
 
 
 class ImportDataDialog(QDialog):
     def __init__(self, db_manager, parent=None):
         super().__init__(parent)
         self.db = db_manager
+        self.sql_importer = ExternalDBImporter()
         self.filepath = ""
         self.setWindowTitle("Импорт новой партии в БЗ")
-        self.setMinimumWidth(750)
+        self.setMinimumWidth(800)
+        self.setMinimumHeight(600)
         self.init_ui()
 
     def init_ui(self):
-        main_layout = QVBoxLayout(self)
+        self.main_layout = QVBoxLayout(self)
+
+        # Создаем вкладки
+        self.tabs = QTabWidget()
+
+        # Вкладка 1: Ручной импорт / Excel
+        self.excel_tab = QWidget()
+        self.setup_excel_ui()
+
+        # Вкладка 2: Импорт из SQL БД
+        self.sql_tab = QWidget()
+        self.setup_sql_ui()
+
+        self.tabs.addTab(self.excel_tab, "Файлы")
+        self.tabs.addTab(self.sql_tab, "БД (SQL)")
+
+        self.main_layout.addWidget(self.tabs)
+
+    def setup_excel_ui(self):
+        """Твой существующий интерфейс для Excel/Ручного ввода"""
+        layout = QVBoxLayout(self.excel_tab)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         content_widget = QWidget()
-        layout = QVBoxLayout(content_widget)
+        scroll_layout = QVBoxLayout(content_widget)
 
         # --- 1. Основные параметры ---
         batch_group = QGroupBox("Параметры партии")
@@ -42,7 +66,7 @@ class ImportDataDialog(QDialog):
         grid_main.addWidget(QLabel("Извлечение:"), 1, 2);
         grid_main.addWidget(self.edit_ext, 1, 3)
         batch_group.setLayout(grid_main)
-        layout.addWidget(batch_group)
+        scroll_layout.addWidget(batch_group)
 
         # --- 2. Химический состав ---
         chem_group = QGroupBox("Химический состав (%)")
@@ -59,7 +83,7 @@ class ImportDataDialog(QDialog):
             grid_chem.addWidget(QLabel(f"{label}:"), i // 2, (i % 2) * 2)
             grid_chem.addWidget(self.chem_inputs[key], i // 2, (i % 2) * 2 + 1)
         chem_group.setLayout(grid_chem)
-        layout.addWidget(chem_group)
+        scroll_layout.addWidget(chem_group)
 
         # --- 3. Файл ---
         file_group = QGroupBox("Файл данных")
@@ -70,24 +94,26 @@ class ImportDataDialog(QDialog):
         file_layout.addWidget(self.lbl_file)
         file_layout.addWidget(btn_select)
         file_group.setLayout(file_layout)
-        layout.addWidget(file_group)
+        scroll_layout.addWidget(file_group)
 
         # --- 4. МАППИНГ (С ТАЙМСТЕМПОМ) ---
         self.mapping_group = QGroupBox("Сопоставление столбцов процесса")
         self.mapping_grid = QGridLayout()
         self.mapping_group.setLayout(self.mapping_grid)
-        self.mapping_group.setVisible(False)
-        layout.addWidget(self.mapping_group)
-
+        self.mapping_group.hide()
+        scroll_layout.addWidget(self.mapping_group)
+        # Прижимаем всё содержимое вверх, чтобы не расползалось
+        scroll_layout.addStretch()
         scroll.setWidget(content_widget)
-        main_layout.addWidget(scroll)
+
+        layout.addWidget(scroll)
 
         self.btn_save = QPushButton("✅ ЗАГРУЗИТЬ В БАЗУ")
         self.btn_save.setFixedHeight(45)
         self.btn_save.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold;")
         self.btn_save.clicked.connect(self.save_data)
         self.btn_save.setEnabled(False)
-        main_layout.addWidget(self.btn_save)
+        layout.addWidget(self.btn_save)
 
         # Список полей для процесса
         self.required_fields = {
@@ -102,6 +128,85 @@ class ImportDataDialog(QDialog):
             "optimal_temp": "Опт. температура"
         }
         self.combos = {}
+
+    def run_sql_sync(self):
+        """Логика подключения и импорта из SQL"""
+        self.btn_run_sql.setEnabled(False)
+        self.btn_run_sql.setText("Подключение...")
+        QApplication.processEvents()
+
+        success = self.sql_importer.connect_external(
+            self.db_type.currentText(),
+            self.db_host.text(),
+            self.db_port.text(),
+            self.db_user.text(),
+            self.db_pass.text(),
+            self.db_name.text()
+        )
+
+        if not success:
+            QMessageBox.critical(self, "Ошибка связи", "Не удалось установить соединение с сервером БД.")
+            self.btn_run_sql.setEnabled(True)
+            self.btn_run_sql.setText("ЗАПУСТИТЬ СИНХРОНИЗАЦИЮ")
+            return
+
+        self.btn_run_sql.setText("Загрузка данных...")
+        QApplication.processEvents()
+
+        count = self.sql_importer.import_good_batches(days_back=30)
+
+        if count > 0:
+            QMessageBox.information(self, "Успех", f"Синхронизация завершена!\nИмпортировано партий: {count}")
+            self.accept()
+        else:
+            QMessageBox.warning(self, "Результат", "Новых данных для импорта не обнаружено.")
+            self.btn_run_sql.setEnabled(True)
+            self.btn_run_sql.setText("ЗАПУСТИТЬ СИНХРОНИЗАЦИЮ")
+
+    def setup_sql_ui(self):
+        """Новый интерфейс для подключения к SQL"""
+        layout = QVBoxLayout(self.sql_tab)
+
+        conn_group = QGroupBox("Параметры подключения к внешней БД")
+        grid = QGridLayout()
+
+        self.db_type = QComboBox()
+        self.db_type.addItems(["PostgreSQL", "MSSQL"])
+
+        self.db_host = QLineEdit("localhost")
+        self.db_port = QLineEdit("5432")
+        self.db_user = QLineEdit("postgres")
+        self.db_pass = QLineEdit()
+        self.db_pass.setEchoMode(QLineEdit.Password)
+        self.db_name = QLineEdit("factory_db")
+
+        grid.addWidget(QLabel("Тип БД:"), 0, 0);
+        grid.addWidget(self.db_type, 0, 1)
+        grid.addWidget(QLabel("Хост:"), 1, 0);
+        grid.addWidget(self.db_host, 1, 1)
+        grid.addWidget(QLabel("Порт:"), 2, 0);
+        grid.addWidget(self.db_port, 2, 1)
+        grid.addWidget(QLabel("Пользователь:"), 3, 0);
+        grid.addWidget(self.db_user, 3, 1)
+        grid.addWidget(QLabel("Пароль:"), 4, 0);
+        grid.addWidget(self.db_pass, 4, 1)
+        grid.addWidget(QLabel("Имя БД:"), 5, 0);
+        grid.addWidget(self.db_name, 5, 1)
+
+        conn_group.setLayout(grid)
+        layout.addWidget(conn_group)
+
+        info_label = QLabel("Будут загружены только успешные партии за последние 30 дней\n"
+                            "(Извлечение > 85%, оценка качества >= 4)")
+        info_label.setStyleSheet("color: #666; font-style: italic;")
+        layout.addWidget(info_label)
+
+        self.btn_run_sql = QPushButton("ЗАПУСТИТЬ СИНХРОНИЗАЦИЮ")
+        self.btn_run_sql.setFixedHeight(50)
+        self.btn_run_sql.setStyleSheet("background-color: #E3F2FD; font-weight: bold;")
+        self.btn_run_sql.clicked.connect(self.run_sql_sync)
+        layout.addWidget(self.btn_run_sql)
+        layout.addStretch()
 
     def select_file(self):
         file, _ = QFileDialog.getOpenFileName(self, "Выбор", "", "Data (*.xlsx *.csv)")

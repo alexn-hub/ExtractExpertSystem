@@ -1,132 +1,102 @@
-# app/core/data_importer.py
 import pandas as pd
 import sqlalchemy as sa
 from sqlalchemy import create_engine, text
 from typing import List, Dict, Optional
 from datetime import datetime, timedelta
-import logging
 from app.core.database import DatabaseManager
 from app.utils.config import config
 from app.utils.logger import logger
 
 
 class ExternalDBImporter:
-    """Импорт данных из внешней производственной БД"""
+    """Импорт данных из внешней производственной БД (PostgreSQL / MSSQL)"""
 
-    def __init__(self, connection_string: str = None):
-        self.connection_string = connection_string
+    def __init__(self):
         self.external_engine = None
         self.local_db = DatabaseManager()
 
-    def connect_external(self, connection_string: str):
-        """Подключение к внешней БД"""
+    def connect_external(self, db_type, host, port, user, password, db_name):
+        """Создает подключение к БД в зависимости от типа"""
         try:
-            self.external_engine = create_engine(connection_string)
-            logger.info(f"Подключение к внешней БД: {connection_string}")
+            if db_type == "PostgreSQL":
+                # Нужен: pip install psycopg2-binary
+                url = f"postgresql://{user}:{password}@{host}:{port}/{db_name}"
+            elif db_type == "MSSQL":
+                # Нужен: pip install pyodbc (и установленный ODBC Driver 17 на Windows)
+                url = f"mssql+pyodbc://{user}:{password}@{host}:{port}/{db_name}?driver=ODBC+Driver+17+for+SQL+Server"
+            else:
+                raise ValueError(f"Тип БД {db_type} не поддерживается")
+
+            self.external_engine = create_engine(url)
+
+            # Тестовое подключение
+            with self.external_engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+
+            logger.info(f"Успешное подключение к {db_type} на {host}")
             return True
         except Exception as e:
             logger.error(f"Ошибка подключения к внешней БД: {e}")
             return False
 
     def import_good_batches(self, days_back: int = 30, min_extraction: float = 85.0):
-        """Импорт успешных партий за указанный период"""
+        """Импорт успешных партий. SQL адаптирован под универсальность"""
         try:
             if not self.external_engine:
                 raise ValueError("Нет подключения к внешней БД")
 
-            # Запрос к внешней БД для получения успешных партий
+            # Вычисляем дату в Python, чтобы SQL запрос был одинаковым для всех БД
+            start_date = (datetime.now() - timedelta(days=days_back)).strftime('%Y-%m-%d')
+
             query = text(f"""
-                SELECT 
-                    batch_id,
-                    extraction_date,
-                    sulfate_number,
-                    sample_weight,
-                    ni_percent,
-                    cu_percent,
-                    pt_percent,
-                    pd_percent,
-                    sio2_percent,
-                    c_percent,
-                    se_percent,
-                    extraction_percent,
-                    process_duration,
-                    quality_rating,
-                    operator_id,
-                    notes
-                FROM production_batches
-                WHERE extraction_date >= DATE_SUB(NOW(), INTERVAL {days_back} DAY)
-                AND extraction_percent >= {min_extraction}
-                AND quality_rating >= 4
+                SELECT * FROM production_batches
+                WHERE extraction_date >= :start_date
+                AND extraction_percent >= :min_ext
                 ORDER BY extraction_date DESC
             """)
 
             with self.external_engine.connect() as conn:
-                batches_df = pd.read_sql(query, conn)
+                batches_df = pd.read_sql(query, conn, params={
+                    "start_date": start_date,
+                    "min_ext": min_extraction
+                })
 
-            logger.info(f"Найдено {len(batches_df)} успешных партий для импорта")
+            logger.info(f"Найдено {len(batches_df)} партий во внешней БД")
 
-            # Импорт в локальную БД
             imported_count = 0
             for _, row in batches_df.iterrows():
                 batch_data = row.to_dict()
-                batch_data['is_good'] = True
 
-                # Импорт основной информации о партии
+                # Добавляем в локальную SQLite (DatabaseManager)
                 if self.local_db.add_batch(batch_data):
-                    # Импорт процессных данных
+                    # Сразу тянем процессные данные (графики) для этой партии
                     self.import_process_data(batch_data['batch_id'])
                     imported_count += 1
 
-            logger.info(f"Импортировано {imported_count} партий")
             return imported_count
-
         except Exception as e:
             logger.error(f"Ошибка импорта партий: {e}")
             return 0
 
     def import_process_data(self, batch_id: str):
-        """Импорт процессных данных для конкретной партии"""
+        """Метод остается почти как был, но с защитой от пустых данных"""
         try:
-            query = text("""
-                SELECT 
-                    timestamp,
-                    temperature_1,
-                    temperature_2,
-                    temperature_3,
-                    acid_flow,
-                    current_value
-                FROM process_history
-                WHERE batch_id = :batch_id
-                ORDER BY timestamp
-            """)
+            query = text("SELECT * FROM process_history WHERE batch_id = :batch_id")
 
             with self.external_engine.connect() as conn:
-                params = {'batch_id': batch_id}
-                process_df = pd.read_sql(query, conn, params=params)
+                df = pd.read_sql(query, conn, params={"batch_id": batch_id})
 
-            # Преобразование данных
-            process_records = []
-            for _, row in process_df.iterrows():
-                record = {
-                    'timestamp': row['timestamp'],
-                    'temperature_1': float(row['temperature_1']) if pd.notna(row['temperature_1']) else None,
-                    'temperature_2': float(row['temperature_2']) if pd.notna(row['temperature_2']) else None,
-                    'temperature_3': float(row['temperature_3']) if pd.notna(row['temperature_3']) else None,
-                    'acid_flow': float(row['acid_flow']) if pd.notna(row['acid_flow']) else None,
-                    'current_value': float(row['current_value']) if pd.notna(row['current_value']) else None
-                }
-                process_records.append(record)
+            if df.empty:
+                return
 
-            # Сохранение в локальную БД
-            self.local_db.add_process_data(batch_id, process_records)
-            logger.info(f"Импортировано {len(process_records)} записей для партии {batch_id}")
+            # Преобразуем в список словарей для DatabaseManager.add_process_data
+            records = df.to_dict('records')
+
+            # Извлекаем номер аппарата из ID партии или данных (для корректной вставки)
+            # Предположим, номер аппарата есть в колонке sulfate_number
+            sfr_num = int(df['sulfate_number'].iloc[0]) if 'sulfate_number' in df.columns else 3
+
+            self.local_db.add_process_data(batch_id, sfr_num, records)
 
         except Exception as e:
-            logger.error(f"Ошибка импорта процессных данных для {batch_id}: {e}")
-
-    def sync_daily(self):
-        """Ежедневная синхронизация"""
-        logger.info("Начало ежедневной синхронизации")
-        imported = self.import_good_batches(days_back=1)
-        logger.info(f"Ежедневная синхронизация завершена. Импортировано: {imported}")
-        return imported
+            logger.error(f"Ошибка импорта графиков для {batch_id}: {e}")

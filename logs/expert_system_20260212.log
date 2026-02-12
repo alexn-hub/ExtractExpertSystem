@@ -1,0 +1,27 @@
+2026-02-12 10:45:55 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 10:45:57 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-12 10:45:57 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-12 10:45:57 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-12 10:45:57 - expert_system.recommender - INFO - Всего в БД: 6
+2026-02-12 10:45:57 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 4
+2026-02-12 10:45:57 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-12 10:45:57 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-12 10:45:57 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-12 10:45:57 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-12 12:17:52 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 16:24:14 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 17:51:45 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 17:52:19 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 17:52:22 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 17:54:14 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 17:54:16 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 17:55:55 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 17:55:57 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 18:01:15 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 18:01:16 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 18:04:05 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 18:04:07 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 18:09:15 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 18:09:19 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-12 18:12:09 - expert_system - INFO - Партия tt1 успешно сохранена.
+2026-02-12 18:12:10 - expert_system - INFO - Добавлено 19719 записей для партии tt1 (СФР-3)
