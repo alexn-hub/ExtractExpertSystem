@@ -39,7 +39,7 @@ class ImportDataDialog(QDialog):
         self.main_layout.addWidget(self.tabs)
 
     def setup_excel_ui(self):
-        """Твой существующий интерфейс для Excel/Ручного ввода"""
+
         layout = QVBoxLayout(self.excel_tab)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -102,7 +102,6 @@ class ImportDataDialog(QDialog):
         self.mapping_group.setLayout(self.mapping_grid)
         self.mapping_group.hide()
         scroll_layout.addWidget(self.mapping_group)
-        # Прижимаем всё содержимое вверх, чтобы не расползалось
         scroll_layout.addStretch()
         scroll.setWidget(content_widget)
 
@@ -124,7 +123,7 @@ class ImportDataDialog(QDialog):
             "current_value": "Ток (А)",
             "acid_flow": "Расход кислоты (т)",
             "level_mixer": "Уровень миксера",
-            "electrodes_pos": "Позиция электрода",  # Исправлено
+            "electrodes_pos": "Позиция электрода",
             "optimal_temp": "Опт. температура"
         }
         self.combos = {}
@@ -164,7 +163,6 @@ class ImportDataDialog(QDialog):
             self.btn_run_sql.setText("ЗАПУСТИТЬ СИНХРОНИЗАЦИЮ")
 
     def setup_sql_ui(self):
-        """Новый интерфейс для подключения к SQL"""
         layout = QVBoxLayout(self.sql_tab)
 
         conn_group = QGroupBox("Параметры подключения к внешней БД")
@@ -286,7 +284,7 @@ class ImportDataDialog(QDialog):
             float_cols = [
                 'temperature_1', 'temperature_2', 'temperature_3',
                 'current_value', 'acid_flow',
-                'level_mixer', 'electrodes_pos', 'optimal_temp'  # Исправлено
+                'level_mixer', 'electrodes_pos', 'optimal_temp'
             ]
 
             for col in float_cols:
@@ -324,9 +322,7 @@ class ImportDataDialog(QDialog):
             process_df['timestamp'] = process_df['timestamp'].astype(str)
             records = process_df.to_dict('records')
 
-            # ПЕРЕДАЕМ sfr_int вторым аргументом, как обновили в database.py
             self.db.add_process_data(batch_id, sfr_int, records)
-
             QMessageBox.information(self, "Готово", f"Успешно загружено {len(records)} строк для СФР-{sfr_int}")
             self.accept()
 

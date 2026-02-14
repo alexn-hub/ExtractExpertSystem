@@ -65,7 +65,7 @@ class DatabaseManager:
                 )
                 ''')
 
-                # Индексы для ускорения работы
+                # Индексы
                 conn.execute(
                     'CREATE INDEX IF NOT EXISTS idx_batch_composition ON batches(ni_percent, cu_percent, pt_percent, pd_percent)')
                 conn.execute('CREATE INDEX IF NOT EXISTS idx_process_batch_time ON process_data(batch_id, timestamp)')
@@ -90,7 +90,7 @@ class DatabaseManager:
     def add_batch(self, batch_data: Dict):
         """Добавление информации о партии в таблицу batches"""
         try:
-            # Чистка от NaN (превращаем в None для SQLite NULL)
+            # Чистка от NaN
             clean_data = {k: (None if pd.isna(v) or v == "" else v) for k, v in batch_data.items()}
 
             with self.get_connection() as conn:
@@ -117,7 +117,6 @@ class DatabaseManager:
         query = "SELECT * FROM batches"
         try:
             import sqlite3
-            # Если у тебя используется pandas для работы с БД:
             import pandas as pd
             with sqlite3.connect(self.db_path) as conn:
                 df = pd.read_sql_query(query, conn)

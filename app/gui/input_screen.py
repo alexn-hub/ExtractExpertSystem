@@ -8,7 +8,7 @@ from PyQt5.QtCore import Qt
 class InputScreen(QWidget):
     def __init__(self, unit_name="", parent=None):
         super().__init__(parent)
-        self.unit_name = unit_name  # Сохраняем имя
+        self.unit_name = unit_name
         self.init_ui()
 
     def init_ui(self):
@@ -103,14 +103,14 @@ class InputScreen(QWidget):
             if weight is None:
                 raise ValueError("Поле 'Масса' заполнено неверно")
 
-            # 2. Формируем словарь без extraction_percent
+            # 2. Формируем словарь
             data = {
                 'sulfate_number': int(self.unit_name.split('-')[-1]),
                 'batch_id': self.edit_batch_id.text(),
                 'sample_weight': weight,
             }
 
-            # 3. Собираем химию (оставляем как было)
+            # 3. Собираем химию
             for key, edit in self.inputs.items():
                 val = clean_float(edit.text())
                 if val is None:

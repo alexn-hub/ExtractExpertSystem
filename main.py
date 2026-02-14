@@ -3,7 +3,7 @@ import os
 
 from pathlib import Path
 
-# --- КРИТИЧЕСКИЙ БЛОК ДЛЯ СБОРКИ EXE ---
+# --- БЛОК ДЛЯ СБОРКИ EXE ---
 if getattr(sys, 'frozen', False):
     # Если запущено как скомпилированный EXE
     basedir = sys._MEIPASS
@@ -11,7 +11,6 @@ else:
     # Если запущено как обычный скрипт Python
     basedir = os.path.dirname(os.path.abspath(__file__))
 
-# Добавляем пути, чтобы Python видел папку app
 sys.path.append(basedir)
 # ---------------------------------------
 
@@ -23,10 +22,8 @@ from app.gui.work_screen import WorkScreen
 from app.gui.sulfate_unit import SulfateUnit
 from app.gui.kb_screen import KnowledgeBaseScreen
 
-# Добавляем путь к проекту в sys.path
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()

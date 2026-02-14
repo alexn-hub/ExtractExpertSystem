@@ -13,14 +13,13 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 import pandas as pd
 
-# Импортируем ваш класс
+
 from app.core.database import DatabaseManager
 
 
 class SimpleDBManager(QWidget):
     def __init__(self):
         super().__init__()
-        # Используем ваш менеджер
         self.db_manager = DatabaseManager()
         self.init_ui()
 

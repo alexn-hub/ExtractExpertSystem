@@ -18,13 +18,10 @@ class SulfateUnit(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        # Стэк — это как колода карт, видна только верхняя
         self.stack = QStackedWidget()
 
         # 1. Создаем экран ввода
         self.input_page = InputScreen(unit_name=unit_name)
-        #self.input_page.combo_sfr.setCurrentText(unit_name)
-        #self.input_page.combo_sfr.setEnabled(False)  # Чтобы нельзя было поменять СФР во вкладке
 
         # 2. Создаем экран работы и передаем имя юнита
         self.work_page = WorkScreen(unit_name=self.unit_name)

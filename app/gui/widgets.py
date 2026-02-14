@@ -16,10 +16,8 @@ class SulfatizerWidget(QWidget):
         self.setMinimumSize(550, 500)
         self.angle = 0
         self.is_animating = False
-
-        # Новые переменные для плавного движения
-        self.current_lte = 0.0  # Текущая высота (анимация)
-        self.target_lte = 0.0  # Целевая высота (из БД)
+        self.current_lte = 0.0
+        self.target_lte = 0.0
 
         self.data = {
             "G": "0.0", "Ip": "0", "Tr": "0.0",
@@ -30,10 +28,7 @@ class SulfatizerWidget(QWidget):
         self.timer.timeout.connect(self._update_frame)
 
     def _update_frame(self):
-        # Было 15, ставим 5 для плавного и медленного вращения
         self.angle = (self.angle + 5) % 360
-
-        # Плавное движение электродов остается без изменений
         diff = self.target_lte - self.current_lte
         if abs(diff) > 0.1:
             self.current_lte += diff * 0.1
@@ -73,7 +68,7 @@ class SulfatizerWidget(QWidget):
         # 1. Форматирование числа (0.00 с принудительной точкой)
         try:
             val_float = float(value)
-            # Форматируем через f-строку (она всегда использует точку)
+            # Форматируем через f-строку
             display_text = f"{val_float:.2f}"
         except:
             display_text = str(value)
@@ -96,14 +91,14 @@ class SulfatizerWidget(QWidget):
         painter.setBrush(QBrush(Qt.white))
         painter.drawRoundedRect(val_rect, 3, 3)
 
-        # 5. Текст значения (Справа, НЕ жирный)
+        # 5. Текст значения
         painter.setPen(Qt.black)
         painter.setFont(QFont("Verdana", 10))
         text_padding = 6
         inner_rect = val_rect.adjusted(0, 0, -text_padding, 0)
         painter.drawText(inner_rect, Qt.AlignRight | Qt.AlignVCenter, display_text)
 
-        # 6. Единицы измерения (Графитовый серый)
+        # 6. Единицы измерения
         painter.setPen(QColor(0, 0, 0)) #(80, 80, 80))
         painter.setFont(QFont("Arial", 8))
         painter.drawText(int(x + label_w + rect_w + 5), int(y + rect_h / 2 + 5), unit)
@@ -134,16 +129,6 @@ class SulfatizerWidget(QWidget):
         painter.drawLine(int(tx), int(ty + th), int(tx + tw), int(ty + th))
         painter.drawLine(int(tx + tw), int(ty + th), int(tx + tw), int(ty))
 
-        # 3. Индикаторы и стрелка
-        #self.draw_indicator(painter, tx - 190, ty - 65, "Gк:", self.data["G"], "т")
-
-        #arrow_color = QColor('#FFD740')
-        #painter.setPen(QPen(arrow_color, 3, Qt.SolidLine, Qt.RoundCap))  # Стрелка чуть тоньше
-        #painter.drawLine(int(tx - 60), int(ty - 40), int(tx + 30), int(ty - 40))
-        #painter.drawLine(int(tx + 30), int(ty - 40), int(tx + 30), int(ty + 40))
-        #painter.drawLine(int(tx + 30), int(ty + 40), int(tx + 22), int(ty + 30))
-        #painter.drawLine(int(tx + 30), int(ty + 40), int(tx + 38), int(ty + 30))
-
         self.draw_indicator(painter, tx - 190, ty + 60, "Iп:", self.data["Ip"], "А")
         self.draw_indicator(painter, tx + tw + 15, ty - 20, "Тг:", self.data["Tg"], "°C")
         self.draw_indicator(painter, tx + tw + 15, ty + 100, "H э:", self.data["Lte"], "мм")
@@ -159,17 +144,17 @@ class SulfatizerWidget(QWidget):
         painter.drawRect(int(cx - 70), int(ty - 10), electrode_width, int(total_h))
         painter.drawRect(int(cx + 70 - electrode_width), int(ty - 10), electrode_width, int(total_h))
 
-        # 5. МЕШАЛКА С ЭФФЕКТАМИ ОБЪЕМА (ИСПРАВЛЕННАЯ)
+        # 5. МЕШАЛКА С ЭФФЕКТАМИ ОБЪЕМА
         mixer_y = ty + th - 75
 
-        # Сначала рисуем вал (толстый - 4px)
+        # вал
         painter.setPen(QPen(Qt.black, 4))
         painter.drawLine(int(cx), int(ty - 10), int(cx), int(mixer_y))
 
         # Расчет параметров
         rad = math.radians(self.angle)
-        cos_val = math.cos(rad)  # Отвечает за ширину (размах)
-        sin_val = math.sin(rad)  # Отвечает за то, впереди лопасть или сзади
+        cos_val = math.cos(rad)
+        sin_val = math.sin(rad)
 
         max_w = 25
         current_w = max_w * cos_val

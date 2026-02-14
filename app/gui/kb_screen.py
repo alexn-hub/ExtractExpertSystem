@@ -30,7 +30,6 @@ class KnowledgeBaseScreen(QWidget):
         self.filter_extract = QComboBox()
         self.filter_extract.addItems(["Любое извлечение", "> 90%", "> 95%", "> 98%"])
 
-        # Фиксированная ширина для кнопок, чтобы они были одинаковыми
         btn_width = 170
         btn_height = 40
 
@@ -81,7 +80,7 @@ class KnowledgeBaseScreen(QWidget):
         # --- ОБЛАСТЬ 2: ТАБЛИЦА BATCHES (ВЕРХНЯЯ) ---
         layout.addWidget(QLabel("<b>Реестр успешных партий (batches):</b>"))
         self.table_batches = QTableWidget()
-        # Включаем стандартную нумерацию строк слева
+
         self.table_batches.verticalHeader().setVisible(True)
         self.table_batches.verticalHeader().setDefaultSectionSize(25)
 
@@ -103,12 +102,12 @@ class KnowledgeBaseScreen(QWidget):
         line.setFrameShadow(QFrame.Sunken)
         layout.addWidget(line)
 
-        # --- ОБЛАСТЬ 3: ТАБЛИЦА PROCESS_DATA (НИЖНЯЯ) ---
-        layout.addWidget(QLabel("<b>Подробные параметры тех. процесса (process_data):</b>"))
+        # --- ОБЛАСТЬ 3: ТАБЛИЦА PROCESS_DATA ---
+
+        self.lbl_process_title = QLabel("<b>Подробные параметры тех. процесса (process_data):</b>")
+        layout.addWidget(self.lbl_process_title)
         self.table_process = QTableWidget()
         self.table_process.verticalHeader().setVisible(False)
-
-        # Увеличиваем количество колонок до 9 (или 10, если хочешь видеть СФР и там)
         self.table_process.setColumnCount(9)
         self.table_process.setHorizontalHeaderLabels([
             "Время", "Т раст. 1", "Т раст. 2", "Т газа", "Ток", "Расход кисл.",
@@ -118,11 +117,7 @@ class KnowledgeBaseScreen(QWidget):
         self.table_process.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table_process.setEditTriggers(QTableWidget.NoEditTriggers)
         layout.addWidget(self.table_process)
-
-        # Чтобы левые края колонок совпадали, установим одинаковую ширину отступа (Vertical Header Width)
-        # В верхней таблице он есть, в нижней его нет. Мы можем сделать фиктивный отступ.
         self.table_batches.verticalHeader().setFixedWidth(40)
-
         self.load_batches()
 
     def load_batches(self):
@@ -161,7 +156,6 @@ class KnowledgeBaseScreen(QWidget):
                 continue
 
             self.table_batches.insertRow(row_idx)
-            # Ставим данные
             self.table_batches.setItem(row_idx, 0, QTableWidgetItem(str(b['batch_id'])))
             self.table_batches.setItem(row_idx, 1, QTableWidgetItem(str(b['extraction_date'])))
             self.table_batches.setItem(row_idx, 2, QTableWidgetItem(f"СФР-{b['sulfate_number']}"))
@@ -177,10 +171,10 @@ class KnowledgeBaseScreen(QWidget):
             row_idx += 1
 
     def open_import_dialog(self):
-        from app.gui.import_dialog import ImportDataDialog  # Импорт внутри метода, чтобы избежать циклов
+        from app.gui.import_dialog import ImportDataDialog
         dialog = ImportDataDialog(self.db, self)
         if dialog.exec_():
-            self.load_batches()  # Обновляем таблицу после добавления
+            self.load_batches()
 
     def on_batch_selected(self):
         selected = self.table_batches.selectedItems()
@@ -189,21 +183,22 @@ class KnowledgeBaseScreen(QWidget):
 
         # batch_id берем из 0-й колонки (ID Партии)
         batch_id = self.table_batches.item(selected[0].row(), 0).text()
+
+        # --- ОБНОВЛЯЕМ ТЕКСТ НАД ТАБЛИЦЕЙ ---
+        self.lbl_process_title.setText(f"<b>Подробные параметры тех. процесса (Партия: {batch_id}):</b>")
         df = self.db.get_process_data(batch_id)
 
         self.table_process.setRowCount(0)
         for i, row in df.iterrows():
             self.table_process.insertRow(i)
 
-            # 1-6 колонки (базовые)
+
             self.table_process.setItem(i, 0, QTableWidgetItem(str(row.get('timestamp', ''))))
             self.table_process.setItem(i, 1, QTableWidgetItem(f"{row.get('temperature_1', 0):.1f}"))
             self.table_process.setItem(i, 2, QTableWidgetItem(f"{row.get('temperature_2', 0):.1f}"))
             self.table_process.setItem(i, 3, QTableWidgetItem(f"{row.get('temperature_3', 0):.1f}"))
             self.table_process.setItem(i, 4, QTableWidgetItem(f"{row.get('current_value', 0):.3f}"))
             self.table_process.setItem(i, 5, QTableWidgetItem(f"{row.get('acid_flow', 0):.2f}"))
-
-            # 7-9 колонки (новые параметры)
             self.table_process.setItem(i, 6, QTableWidgetItem(f"{row.get('level_mixer', 0):.1f}"))
             self.table_process.setItem(i, 7, QTableWidgetItem(f"{row.get('electrodes_pos', 0):.1f}"))
             self.table_process.setItem(i, 8, QTableWidgetItem(f"{row.get('optimal_temp', 0):.1f}"))
@@ -218,7 +213,7 @@ class KnowledgeBaseScreen(QWidget):
         row = selected[0].row()
         batch_id = self.table_batches.item(row, 0).text()
 
-        # Спрашиваем подтверждение (важно, чтобы не удалить случайно!)
+        # Спрашиваем подтверждение
         reply = QMessageBox.question(
             self, 'Подтверждение',
             f"Вы уверены, что хотите полностью удалить партию {batch_id}?\nЭто действие нельзя отменить.",

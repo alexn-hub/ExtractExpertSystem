@@ -48,7 +48,7 @@ class WorkScreen(QWidget):
             color: #263238;
         """)
         header_layout.addWidget(self.title_label)
-        header_layout.addStretch()  # Прижимает заголовок влево
+        header_layout.addStretch()
 
         self.main_layout.addWidget(header_widget)
 
@@ -128,7 +128,7 @@ class WorkScreen(QWidget):
 
         # НОВАЯ КНОПКА МОДЕЛИ
         self.btn_toggle_ai = QPushButton("📊 МОДЕЛЬ ИИ")
-        self.btn_toggle_ai.setCheckable(True)  # <--- ДОБАВЬ ЭТУ СТРОКУ
+        self.btn_toggle_ai.setCheckable(True)
         self.btn_toggle_ai.setStyleSheet(
             "background-color: #455A64; color: white; font-weight: bold; height: 35px; border-radius: 4px;")
         self.btn_toggle_ai.clicked.connect(self.toggle_ai_window)
@@ -173,17 +173,15 @@ class WorkScreen(QWidget):
     def toggle_ai_window(self):
         """Метод для кнопки: открываем окно под таблицей поверх графика"""
         if self.btn_toggle_ai.isChecked():
-            # 1. Получаем геометрию правой панели (где таблица и кнопка)
+            # 1. Получаем геометрию правой панели
             rect = self.right_group.geometry()
 
             # 2. Определяем глобальную позицию правого нижнего угла этой панели
-            # Это как раз точка, где заканчивается таблица и начинается график
             pos = self.mapToGlobal(rect.bottomRight())
 
             # 3. Сдвигаем окно:
             # x: вычитаем ширину окна, чтобы оно не ушло за край экрана
             # y: вычитаем небольшое значение (например, 20-40 пикселей),
-            # чтобы оно слегка "заползло" под таблицу или прижалось к ней
             x_coord = pos.x() - self.ai_window.width()
             y_coord = pos.y() + 80 # Небольшой отступ вниз от границы группы
 
@@ -193,7 +191,6 @@ class WorkScreen(QWidget):
         else:
             self.ai_window.hide()
 
-    # Добавь эти методы в любое место внутри класса WorkScreen
     def showEvent(self, event):
         super().showEvent(event)
         # Показываем только если кнопка ВКЛЮЧЕНА
@@ -205,7 +202,7 @@ class WorkScreen(QWidget):
     def hideEvent(self, event):
         """Вызывается автоматически, когда пользователь уходит на другую вкладку"""
         super().hideEvent(event)
-        # Скрываем окно, но НЕ выключаем кнопку (чтобы оно вернулось при возврате)
+        # Скрываем окно, но НЕ выключаем кнопку
         if hasattr(self, 'ai_window'):
             self.ai_window.hide()
 
@@ -289,7 +286,7 @@ class WorkScreen(QWidget):
             # 2. ВКЛЮЧАЕМ АНИМАЦИЮ
             self.sulfatizer.start_animation()
 
-            # 3. СБРАСЫВАЕМ ВИЗУАЛ НА НАЧАЛО (Твоя строка)
+            # 3. СБРАСЫВАЕМ ВИЗУАЛ НА НАЧАЛО
             self.update_ui_elements(0)
 
             # 4. ЗАПУСКАЕМ ТАЙМЕР И КНОПКИ
@@ -332,7 +329,7 @@ class WorkScreen(QWidget):
             if future_idx < len(self.history_data):
                 future_row = self.history_data.iloc[future_idx]
                 future_t = future_row.get('temperature_1', 0.0)
-                future_opt = future_row.get('optimal_temp', 0.0)  # Это наша "min T протек. опер."
+                future_opt = future_row.get('optimal_temp', 0.0)
 
                 future_delta = future_t - future_opt
                 self.ai_window.lbl_prediction.setText(f"T+10 мин: {future_t:.1f} °C")
@@ -368,7 +365,7 @@ class WorkScreen(QWidget):
         # Сброс всех параметров мнемосхемы в ноль
         self.sulfatizer.set_params(0, 0, 0, 0, 0, 0)
 
-        # Сброс подсветки таблицы (если есть)
+        # Сброс подсветки таблицы
         for i in range(self.rec_table.rowCount()):
             for j in range(self.rec_table.columnCount()):
                 item = self.rec_table.item(i, j)
@@ -384,7 +381,7 @@ class AIWindow(QFrame):
     def __init__(self, unit_name, parent=None):
         super().__init__(parent, Qt.Tool | Qt.WindowStaysOnTopHint)
         self.unit_name = unit_name
-        self.setWindowTitle(f"ИИ-Модель: {unit_name}")  # Теперь в заголовке будет СФР-3 или СФР-4
+        self.setWindowTitle(f"ИИ-Модель: {unit_name}")
         self.setFixedSize(240, 200)
         self.setStyleSheet("""
             QFrame { 

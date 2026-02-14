@@ -1,0 +1,17 @@
+2026-02-15 00:07:53 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-15 00:08:15 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-15 00:08:15 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-15 00:08:15 - expert_system.recommender - INFO - ВЫБРАНА ЛУЧШАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-15 00:08:15 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-15 00:20:08 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-15 00:21:16 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-15 00:21:16 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-15 00:21:16 - expert_system.recommender - INFO - ВЫБРАНА ЛУЧШАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-15 00:21:16 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-15 00:23:28 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-15 00:23:48 - expert_system - ERROR - Ошибка подключения к внешней БД: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: В соединении отказано
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (::1), port 5432 failed: В соединении отказано
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
