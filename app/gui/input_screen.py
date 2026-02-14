@@ -6,8 +6,9 @@ from PyQt5.QtCore import Qt
 
 
 class InputScreen(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, unit_name="", parent=None):
         super().__init__(parent)
+        self.unit_name = unit_name  # Сохраняем имя
         self.init_ui()
 
     def init_ui(self):
@@ -25,11 +26,6 @@ class InputScreen(QWidget):
         form_group = QGroupBox("Общая информация")
         form_layout = QGridLayout()
 
-        form_layout.addWidget(QLabel("Сульфатизатор:"), 0, 0)
-        self.combo_sfr = QComboBox()
-        self.combo_sfr.addItems(["СФР-3", "СФР-4"])
-        form_layout.addWidget(self.combo_sfr, 0, 1)
-
         form_layout.addWidget(QLabel("Номер партии:"), 1, 0)
         self.edit_batch_id = QLineEdit("P-2026-001")
         form_layout.addWidget(self.edit_batch_id, 1, 1)
@@ -37,11 +33,6 @@ class InputScreen(QWidget):
         form_layout.addWidget(QLabel("Масса (кг):"), 2, 0)
         self.edit_weight = QLineEdit("1042.08")
         form_layout.addWidget(self.edit_weight, 2, 1)
-
-
-        form_layout.addWidget(QLabel("Извлечение (%):"), 3, 0)
-        self.edit_extraction = QLineEdit("93.08")
-        form_layout.addWidget(self.edit_extraction, 3, 1)
 
         form_group.setLayout(form_layout)
         layout.addWidget(form_group)
@@ -82,7 +73,7 @@ class InputScreen(QWidget):
 
 
         # Кнопка ОК
-        self.btn_start = QPushButton("Запустить расчет")
+        self.btn_start = QPushButton("Подтвердить данные партии")
         self.btn_start.setMinimumHeight(60)
         self.btn_start.setStyleSheet("""
             QPushButton {
@@ -97,39 +88,32 @@ class InputScreen(QWidget):
         layout.addWidget(self.btn_start)
         layout.addStretch()
 
-    def get_data(self):
-        """Метод для сбора данных из всех полей для Recommender с проверкой ошибок"""
-        from PyQt5.QtWidgets import QMessageBox
 
+    def get_data(self):
         def clean_float(text):
-            """Заменяет запятую на точку и пробует превратить в число"""
             try:
-                # 1. Меняем запятую на точку, если она есть
-                sanitized_text = text.replace(',', '.')
-                return float(sanitized_text)
+                return float(text.replace(',', '.'))
             except ValueError:
                 return None
 
         try:
-            # Проверка основных полей
+            # 1. Проверка массы (Извлечение отсюда УДАЛИЛИ)
             weight = clean_float(self.edit_weight.text())
-            extraction = clean_float(self.edit_extraction.text())
 
-            if weight is None or extraction is None:
-                raise ValueError("Поля 'Масса' или 'Извлечение' заполнены неверно")
+            if weight is None:
+                raise ValueError("Поле 'Масса' заполнено неверно")
 
+            # 2. Формируем словарь без extraction_percent
             data = {
-                'sulfate_number': int(self.combo_sfr.currentText().split('-')[-1]),
+                'sulfate_number': int(self.unit_name.split('-')[-1]),
                 'batch_id': self.edit_batch_id.text(),
                 'sample_weight': weight,
-                'extraction_percent': extraction
             }
 
-            # Собираем и проверяем химию
+            # 3. Собираем химию (оставляем как было)
             for key, edit in self.inputs.items():
                 val = clean_float(edit.text())
                 if val is None:
-                    # Ищем красивое имя элемента для сообщения об ошибке
                     element_name = next((e[0] for e in [
                         ("Ni", "ni_percent"), ("Cu", "cu_percent"), ("Pt", "pt_percent"),
                         ("Pd", "pd_percent"), ("SiO2", "sio2_percent"), ("C", "c_percent"),
@@ -141,6 +125,6 @@ class InputScreen(QWidget):
             return data
 
         except ValueError as e:
-            # Вывод ошибки пользователю
+            from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self, "Ошибка ввода", str(e))
             return None

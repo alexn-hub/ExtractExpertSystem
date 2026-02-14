@@ -12,6 +12,7 @@ from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QPolygonF, QFont
 class SulfatizerWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.unit_label = ""
         self.setMinimumSize(550, 500)
         self.angle = 0
         self.is_animating = False
@@ -134,19 +135,19 @@ class SulfatizerWidget(QWidget):
         painter.drawLine(int(tx + tw), int(ty + th), int(tx + tw), int(ty))
 
         # 3. Индикаторы и стрелка
-        self.draw_indicator(painter, tx - 190, ty - 65, "Gк:", self.data["G"], "т")
+        #self.draw_indicator(painter, tx - 190, ty - 65, "Gк:", self.data["G"], "т")
 
-        arrow_color = QColor('#FFD740')
-        painter.setPen(QPen(arrow_color, 3, Qt.SolidLine, Qt.RoundCap))  # Стрелка чуть тоньше
-        painter.drawLine(int(tx - 60), int(ty - 40), int(tx + 30), int(ty - 40))
-        painter.drawLine(int(tx + 30), int(ty - 40), int(tx + 30), int(ty + 40))
-        painter.drawLine(int(tx + 30), int(ty + 40), int(tx + 22), int(ty + 30))
-        painter.drawLine(int(tx + 30), int(ty + 40), int(tx + 38), int(ty + 30))
+        #arrow_color = QColor('#FFD740')
+        #painter.setPen(QPen(arrow_color, 3, Qt.SolidLine, Qt.RoundCap))  # Стрелка чуть тоньше
+        #painter.drawLine(int(tx - 60), int(ty - 40), int(tx + 30), int(ty - 40))
+        #painter.drawLine(int(tx + 30), int(ty - 40), int(tx + 30), int(ty + 40))
+        #painter.drawLine(int(tx + 30), int(ty + 40), int(tx + 22), int(ty + 30))
+        #painter.drawLine(int(tx + 30), int(ty + 40), int(tx + 38), int(ty + 30))
 
         self.draw_indicator(painter, tx - 190, ty + 60, "Iп:", self.data["Ip"], "А")
         self.draw_indicator(painter, tx + tw + 15, ty - 20, "Тг:", self.data["Tg"], "°C")
-        self.draw_indicator(painter, tx + tw + 15, ty + 100, "Lt э:", self.data["Lte"], "мм")
-        self.draw_indicator(painter, tx + tw + 15, ty + 180, "Lt р:", self.data["Ltr"], "мм")
+        self.draw_indicator(painter, tx + tw + 15, ty + 100, "H э:", self.data["Lte"], "мм")
+        self.draw_indicator(painter, tx + tw + 15, ty + 180, "H м:", self.data["Ltr"], "мм")
         self.draw_indicator(painter, cx - 85, ty + th - 35, "Тр:", self.data["Tr"], "°C")
 
         # 4. Электроды
@@ -222,4 +223,4 @@ class SulfatizerWidget(QWidget):
         # Подпись внизу
         painter.setPen(Qt.black)
         painter.setFont(QFont("Arial", 12, QFont.Bold))
-        painter.drawText(QRectF(cx - 50, ty + th + 15, 100, 30), Qt.AlignCenter, "СФР-3")
+        painter.drawText(QRectF(cx - 50, ty + th + 15, 100, 30), Qt.AlignCenter, self.unit_label)

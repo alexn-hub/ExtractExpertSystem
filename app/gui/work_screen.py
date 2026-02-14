@@ -1,3 +1,5 @@
+import datetime
+
 import pyqtgraph as pg
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
@@ -7,6 +9,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont, QColor
 from app.gui.widgets import SulfatizerWidget
+from datetime import datetime, timedelta
 
 class WorkScreen(QWidget):
     def __init__(self, unit_name="Неизвестно", parent=None):
@@ -70,6 +73,7 @@ class WorkScreen(QWidget):
         left_vbox = QVBoxLayout(self.left_group)
         left_vbox.setContentsMargins(5, 20, 5, 5)
         self.sulfatizer = SulfatizerWidget()
+        self.sulfatizer.unit_label = self.unit_name
         self.sulfatizer.setMinimumHeight(400)
         left_vbox.addWidget(self.sulfatizer)
 
@@ -215,6 +219,10 @@ class WorkScreen(QWidget):
         self.history_data = history_df
         self.current_minute = 0
         self.active_pulses = []
+
+        # ФИКСИРУЕМ ВРЕМЯ СТАРТА (текущий момент)
+        start_timestamp = datetime.now()
+
         self.val_extraction.setText(f"Прогноз извлечения Rh: {batch_info.get('extraction_percent', 0.0)} %")
         x = list(range(len(history_df)))
         self.curve_tp1.setData(x, history_df['temperature_1'].values)
@@ -222,44 +230,76 @@ class WorkScreen(QWidget):
         self.curve_tg.setData(x, history_df['temperature_3'].values)
         self.curve_ip.setData(x, history_df['current_value'].values)
         self.curve_gk.setData(x, history_df['acid_flow'].cumsum().values)
+
         if 'optimal_temp' in history_df.columns:
-            # Используем x (ось времени) и .values (массив данных)
             self.curve_opt_temp.setData(x, history_df['optimal_temp'].values)
 
         self.v_line.setValue(0)
-        pulse_starts = history_df[(history_df['acid_flow'] > 1.0) & (history_df['acid_flow'].shift(1, fill_value=0) < 1.0)].index
+        pulse_starts = history_df[
+            (history_df['acid_flow'] > 1.0) & (history_df['acid_flow'].shift(1, fill_value=0) < 1.0)].index
         self.rec_table.setRowCount(len(pulse_starts))
+
         for i, start_idx in enumerate(pulse_starts):
             duration = 0
             curr = start_idx
             while curr < len(history_df) and history_df.iloc[curr]['acid_flow'] > 1.0:
                 duration += 1
                 curr += 1
-            avg_flow = round(history_df.iloc[start_idx : start_idx + duration]['acid_flow'].mean(), 2)
+
+            avg_flow = round(history_df.iloc[start_idx: start_idx + duration]['acid_flow'].mean(), 2)
+
+            # --- РАСЧЕТ РЕАЛЬНОГО ВРЕМЕНИ ДЛЯ ТАБЛИЦЫ ---
+            # К времени старта прибавляем количество минут (start_idx)
+            future_time = start_timestamp + timedelta(minutes=int(start_idx))
+            # Формируем строку: День.Месяц Часы:Минуты
+            time_display = future_time.strftime("%d.%m %H:%M")
+            # --------------------------------------------
+
             self.active_pulses.append({'start': start_idx, 'end': start_idx + duration, 'row': i})
-            self.rec_table.setItem(i, 0, QTableWidgetItem(f"{start_idx} мин"))
+
+            # Записываем рассчитанное время вместо "Х мин"
+            self.rec_table.setItem(i, 0, QTableWidgetItem(time_display))
             self.rec_table.setItem(i, 1, QTableWidgetItem(str(avg_flow)))
             self.rec_table.setItem(i, 2, QTableWidgetItem(f"{duration} мин"))
-            for col in range(3):
-                self.rec_table.item(i, col).setTextAlignment(Qt.AlignCenter)
 
-            self.sulfatizer.set_params(0, 0, 0, 0, 0, 0)
-            self.lbl_process_time.setText("00:00")
+            for col in range(3):
+                if self.rec_table.item(i, col):
+                    self.rec_table.item(i, col).setTextAlignment(Qt.AlignCenter)
+
+        self.sulfatizer.set_params(0, 0, 0, 0, 0, 0)
+        self.lbl_process_time.setText("00:00")
 
     def start_simulation(self):
         if self.history_data is not None:
-            self.current_minute = 0
+            # 1. ОБНОВЛЯЕМ ТАБЛИЦУ (Актуальное время с датой)
+            start_timestamp = datetime.now()
 
-            # СНАЧАЛА включаем анимацию
+            for pulse in self.active_pulses:
+                row_idx = pulse['row']
+                # Прибавляем минуты процесса к реальному времени запуска
+                future_time = start_timestamp + timedelta(minutes=int(pulse['start']))
+
+                # Формат: День.Месяц Часы:Минуты
+                time_display = future_time.strftime("%d.%m %H:%M")
+
+                item = self.rec_table.item(row_idx, 0)
+                if item:
+                    item.setText(time_display)
+
+            # 2. ВКЛЮЧАЕМ АНИМАЦИЮ
             self.sulfatizer.start_animation()
-            # ТЕПЕРЬ передаем данные
+
+            # 3. СБРАСЫВАЕМ ВИЗУАЛ НА НАЧАЛО (Твоя строка)
             self.update_ui_elements(0)
-            self.timer.start(1000)  # В продакт нужно указать 600000, чтобы была настоящая минута
+
+            # 4. ЗАПУСКАЕМ ТАЙМЕР И КНОПКИ
+            self.timer.start(1000) # В продакт надо указать 60000 - реальная минута
             self.btn_run.setEnabled(False)
             self.btn_stop.setEnabled(True)
 
     def update_simulation(self):
         self.current_minute += 1
+
         if self.current_minute >= len(self.history_data):
             self.stop_simulation()
             return

@@ -1,0 +1,117 @@
+2026-02-13 16:17:24 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-13 16:17:28 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 16:17:28 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 16:17:28 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 16:17:28 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 16:17:28 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 16:17:28 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 16:17:28 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 16:17:28 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 16:17:28 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 16:17:31 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 16:17:31 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 16:17:31 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 16:17:31 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 16:17:31 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 16:17:31 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 16:17:31 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 16:17:31 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 16:17:31 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 16:24:41 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-13 16:24:43 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 16:24:43 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 16:24:43 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 16:24:43 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 16:24:43 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 16:24:43 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 16:24:43 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 16:24:43 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 16:24:43 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 16:36:41 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-13 16:36:44 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 16:36:44 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 16:36:44 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 16:36:44 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 16:36:44 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 16:36:44 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 16:36:44 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 16:36:44 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 16:36:44 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 16:36:47 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 16:36:47 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 16:36:47 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 16:36:47 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 16:36:47 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 16:36:47 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 16:36:47 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 16:36:47 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 16:36:47 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 16:38:03 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-13 16:38:04 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 16:38:04 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 16:38:04 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 16:38:04 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 16:38:04 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 16:38:04 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 16:38:04 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 16:38:04 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 16:38:04 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 16:40:16 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-13 16:40:18 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 16:40:18 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 16:40:18 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 16:40:18 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 16:40:18 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 16:40:18 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 16:40:18 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 16:40:18 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 16:40:18 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 16:45:44 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-13 16:45:46 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 16:45:46 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 16:45:46 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 16:45:46 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 16:45:46 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 16:45:46 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 16:45:46 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 16:45:46 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 16:45:46 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 16:45:54 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 16:45:54 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 16:45:54 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 16:45:54 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 16:45:54 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 16:45:54 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 16:45:54 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 16:45:54 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 16:45:54 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 16:55:24 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-13 16:55:25 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 16:55:25 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 16:55:25 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 16:55:25 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 16:55:25 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 16:55:25 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 16:55:25 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 16:55:25 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 16:55:25 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 17:04:31 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-13 17:04:33 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 17:04:33 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 17:04:33 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 17:04:33 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 17:04:33 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 17:04:33 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 17:04:33 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 17:04:33 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 17:04:33 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 17:08:45 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-13 17:08:45 - expert_system.recommender - INFO - Входные данные: Масса=1042.08кг, Ni=1.57%, Pd=33.62%
+2026-02-13 17:08:45 - expert_system.recommender - DEBUG - Партия P-2024-002 отклонена: 4+ несовпадения (ni_percent, cu_percent, pt_percent, pd_percent, sio2_percent, se_percent)
+2026-02-13 17:08:45 - expert_system.recommender - INFO - Всего в БД: 7
+2026-02-13 17:08:45 - expert_system.recommender - INFO - Отсеяно по массе (>5%): 5
+2026-02-13 17:08:45 - expert_system.recommender - INFO - Отсеяно по химии (>3 элементов): 1
+2026-02-13 17:08:45 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-13 17:08:45 - expert_system.recommender - INFO - ВЫБРАНА ЭТАЛОННАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-13 17:08:45 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-13 17:19:10 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
