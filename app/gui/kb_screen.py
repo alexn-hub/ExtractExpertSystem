@@ -1,12 +1,17 @@
+# app/gui/kb_screen.py
+import json
+import pandas as pd
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QTableWidget,
-    QTableWidgetItem, QHeaderView, QGroupBox, QLineEdit,
-    QLabel, QComboBox, QPushButton, QFrame, QMessageBox
+    QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem,
+    QHeaderView, QGroupBox, QLineEdit, QLabel, QComboBox, QPushButton, QFrame, QMessageBox
 )
 from PyQt5.QtCore import Qt
-from app.gui.import_dialog import ImportDataDialog
+from app.utils.config import config
+
 
 class KnowledgeBaseScreen(QWidget):
+    """Динамический экран Базы Знаний, адаптирующийся под конфигурацию"""
+
     def __init__(self, db_manager, parent=None):
         super().__init__(parent)
         self.db = db_manager
@@ -17,59 +22,39 @@ class KnowledgeBaseScreen(QWidget):
         layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(10)
 
-        # --- ОБЛАСТЬ 1: ФИЛЬТРЫ ---
+        # Фильтры и кнопки
         filter_group = QGroupBox("Параметры поиска")
         filter_layout = QHBoxLayout()
 
-        self.filter_sfr = QComboBox()
-        self.filter_sfr.addItems(["Все аппараты", "3", "4"])
+        self.filter_unit = QComboBox()
+        self.filter_unit.addItem("Все участки")
+        self.filter_unit.addItems(config.hmi.units)
 
         self.filter_mass_min = QLineEdit()
-        self.filter_mass_min.setPlaceholderText("Мин. масса (кг)")
+        self.filter_mass_min.setPlaceholderText("Мин. масса")
 
-        self.filter_extract = QComboBox()
-        self.filter_extract.addItems(["Любое извлечение", "> 90%", "> 95%", "> 98%"])
-
-        btn_width = 170
+        btn_width = 160
         btn_height = 40
 
-        #Кнопка выгрузки данных из БЗ
         self.btn_search = QPushButton("🔍 ОБНОВИТЬ")
-        self.btn_search.setFixedWidth(btn_width)
-        self.btn_search.setFixedHeight(btn_height)
-        self.btn_search.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold; padding: 5px 15px;")
+        self.btn_search.setFixedSize(btn_width, btn_height)
+        self.btn_search.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold;")
         self.btn_search.clicked.connect(self.load_batches)
 
-        # Кнопка Импорт данных
         self.btn_import = QPushButton("➕ ИМПОРТ ДАННЫХ")
-        self.btn_import.setFixedWidth(btn_width)
-        self.btn_import.setFixedHeight(btn_height)
-        self.btn_import.setStyleSheet("background-color: #1565C0; color: white; font-weight: bold; padding: 5px 15px;")
+        self.btn_import.setFixedSize(btn_width, btn_height)
+        self.btn_import.setStyleSheet("background-color: #1565C0; color: white; font-weight: bold;")
         self.btn_import.clicked.connect(self.open_import_dialog)
 
-        # Кнопка Удалить ---
         self.btn_delete = QPushButton("УДАЛИТЬ ПАРТИЮ")
-        self.btn_delete.setFixedWidth(btn_width)
-        self.btn_delete.setFixedHeight(btn_height)
-        self.btn_delete.setStyleSheet("""
-                QPushButton {
-                    background-color: #C62828; 
-                    color: white; 
-                    font-weight: bold; 
-                    padding: 5px 15px;
-                }
-                QPushButton:hover {
-                    background-color: #D32F2F;
-                }
-            """)
+        self.btn_delete.setFixedSize(btn_width, btn_height)
+        self.btn_delete.setStyleSheet("background-color: #C62828; color: white; font-weight: bold;")
         self.btn_delete.clicked.connect(self.delete_selected_batch)
 
-        filter_layout.addWidget(QLabel("Аппарат:"))
-        filter_layout.addWidget(self.filter_sfr)
+        filter_layout.addWidget(QLabel("Участок:"))
+        filter_layout.addWidget(self.filter_unit)
         filter_layout.addWidget(QLabel("Масса от:"))
         filter_layout.addWidget(self.filter_mass_min)
-        filter_layout.addWidget(QLabel("Эффективность:"))
-        filter_layout.addWidget(self.filter_extract)
         filter_layout.addStretch()
         filter_layout.addWidget(self.btn_search)
         filter_layout.addWidget(self.btn_import)
@@ -77,131 +62,125 @@ class KnowledgeBaseScreen(QWidget):
         filter_group.setLayout(filter_layout)
         layout.addWidget(filter_group)
 
-        # --- ОБЛАСТЬ 2: ТАБЛИЦА BATCHES (ВЕРХНЯЯ) ---
-        layout.addWidget(QLabel("<b>Реестр успешных партий (batches):</b>"))
+        # Таблица партий (Верхняя)
+        layout.addWidget(QLabel("<b>Реестр партий / процессов:</b>"))
         self.table_batches = QTableWidget()
-
-        self.table_batches.verticalHeader().setVisible(True)
         self.table_batches.verticalHeader().setDefaultSectionSize(25)
-
-        self.table_batches.setColumnCount(12)
-        self.table_batches.setHorizontalHeaderLabels([
-            "ID Партии", "Дата", "СФР", "Масса, кг", "Извлеч. %",
-            "Ni %", "Cu %", "Pt %", "Pd %", "SiO2 %", "C %", "Se %"
-        ])
-
         self.table_batches.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         self.table_batches.setSelectionBehavior(QTableWidget.SelectRows)
         self.table_batches.setEditTriggers(QTableWidget.NoEditTriggers)
         self.table_batches.itemSelectionChanged.connect(self.on_batch_selected)
         layout.addWidget(self.table_batches)
 
-        # Разделитель
         line = QFrame()
         line.setFrameShape(QFrame.HLine)
-        line.setFrameShadow(QFrame.Sunken)
         layout.addWidget(line)
 
-        # --- ОБЛАСТЬ 3: ТАБЛИЦА PROCESS_DATA ---
-
-        self.lbl_process_title = QLabel("<b>Подробные параметры тех. процесса (process_data):</b>")
+        # Таблица процесса (Нижняя)
+        self.lbl_process_title = QLabel("<b>Подробные параметры тех. процесса:</b>")
         layout.addWidget(self.lbl_process_title)
+
         self.table_process = QTableWidget()
         self.table_process.verticalHeader().setVisible(False)
-        self.table_process.setColumnCount(9)
-        self.table_process.setHorizontalHeaderLabels([
-            "Время", "Т раст. 1", "Т раст. 2", "Т газа", "Ток", "Расход кисл.",
-            "Уров. микс.", "Полож. электр.", "Опт. темп."
-        ])
-
         self.table_process.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table_process.setEditTriggers(QTableWidget.NoEditTriggers)
         layout.addWidget(self.table_process)
-        self.table_batches.verticalHeader().setFixedWidth(40)
+
         self.load_batches()
 
     def load_batches(self):
-        """Загрузка данных с фильтрацией"""
+        """Динамическое построение шапки таблицы и загрузка партий"""
         all_batches = self.db.get_all_batches()
-        sfr_filter = self.filter_sfr.currentText()
-        extract_filter = self.filter_extract.currentText()
 
-        # 1. Парсинг фильтра по массе
-        try:
-            min_mass = float(self.filter_mass_min.text()) if self.filter_mass_min.text() else 0
-        except ValueError:
-            min_mass = 0
+        base_headers = [
+            "ID Партии", "Дата", "Участок",
+            config.hmi.passport_fields.get('main_metric_label', 'Масса'),
+            config.hmi.target_parameter.get('label', 'Целевой')
+        ]
 
-        # 2. Парсинг фильтра по извлечению (например из "> 90%" достаем 90)
-        min_extract = 0
-        if "%" in extract_filter:
-            try:
-                min_extract = float(extract_filter.replace(">", "").replace("%", "").strip())
-            except:
-                min_extract = 0
+        # Динамические заголовки из статических параметров конфигуратора
+        static_keys = [p['key'] for p in config.hmi.static_parameters]
+        static_labels = [p['label'] for p in config.hmi.static_parameters]
 
+        all_headers = base_headers + static_labels
+        self.table_batches.setColumnCount(len(all_headers))
+        self.table_batches.setHorizontalHeaderLabels(all_headers)
         self.table_batches.setRowCount(0)
+
+        unit_filter = self.filter_unit.currentText()
+
+        try:
+            min_mass = float(self.filter_mass_min.text()) if self.filter_mass_min.text() else 0.0
+        except ValueError:
+            min_mass = 0.0
+
         row_idx = 0
         for b in all_batches:
-            # Фильтр СФР
-            if sfr_filter != "Все аппараты" and str(b['sulfate_number']) != sfr_filter:
+            if unit_filter != "Все участки" and b.get('unit_name') != unit_filter:
                 continue
-
-            # Фильтр Масса
-            if b['sample_weight'] < min_mass:
-                continue
-
-            # Фильтр Извлечение (ИСПРАВЛЕНО)
-            if b['extraction_percent'] < min_extract:
+            if b.get('sample_weight', 0.0) < min_mass:
                 continue
 
             self.table_batches.insertRow(row_idx)
-            self.table_batches.setItem(row_idx, 0, QTableWidgetItem(str(b['batch_id'])))
-            self.table_batches.setItem(row_idx, 1, QTableWidgetItem(str(b['extraction_date'])))
-            self.table_batches.setItem(row_idx, 2, QTableWidgetItem(f"СФР-{b['sulfate_number']}"))
-            self.table_batches.setItem(row_idx, 3, QTableWidgetItem(f"{b['sample_weight']:.1f}"))
-            self.table_batches.setItem(row_idx, 4, QTableWidgetItem(f"{b['extraction_percent']}%"))
+            self.table_batches.setItem(row_idx, 0, QTableWidgetItem(str(b.get('batch_id', ''))))
+            self.table_batches.setItem(row_idx, 1, QTableWidgetItem(str(b.get('extraction_date', ''))))
+            self.table_batches.setItem(row_idx, 2, QTableWidgetItem(str(b.get('unit_name', ''))))
+            self.table_batches.setItem(row_idx, 3, QTableWidgetItem(f"{b.get('sample_weight', 0):.1f}"))
+            self.table_batches.setItem(row_idx, 4, QTableWidgetItem(f"{b.get('target_metric', 0):.2f}"))
 
-            # Химия
-            fields = ['ni_percent', 'cu_percent', 'pt_percent', 'pd_percent', 'sio2_percent', 'c_percent', 'se_percent']
-            for col, field in enumerate(fields, start=5):
-                val = b.get(field, 0)
-                self.table_batches.setItem(row_idx, col, QTableWidgetItem(f"{val:.2f}"))
+            # Распаковываем статические параметры из JSON
+            input_params = {}
+            if b.get('input_params'):
+                try:
+                    input_params = json.loads(b['input_params'])
+                except:
+                    pass
+
+            for col_idx, key in enumerate(static_keys, start=5):
+                val = input_params.get(key, 0.0)
+                self.table_batches.setItem(row_idx, col_idx, QTableWidgetItem(f"{float(val):.2f}"))
 
             row_idx += 1
 
-    def open_import_dialog(self):
-        from app.gui.import_dialog import ImportDataDialog
-        dialog = ImportDataDialog(self.db, self)
-        if dialog.exec_():
-            self.load_batches()
-
     def on_batch_selected(self):
+        """Динамическая отрисовка нижней таблицы процесса с метками из Конфигуратора"""
         selected = self.table_batches.selectedItems()
         if not selected:
             return
 
-        # batch_id берем из 0-й колонки (ID Партии)
         batch_id = self.table_batches.item(selected[0].row(), 0).text()
-
-        # --- ОБНОВЛЯЕМ ТЕКСТ НАД ТАБЛИЦЕЙ ---
         self.lbl_process_title.setText(f"<b>Подробные параметры тех. процесса (Партия: {batch_id}):</b>")
-        df = self.db.get_process_data(batch_id)
 
+        df = self.db.get_process_data(batch_id)
         self.table_process.setRowCount(0)
+
+        if df.empty:
+            self.table_process.setColumnCount(0)
+            return
+
+        # Получаем актуальные настройки трендов из конфигуратора
+        trend_configs = config.hmi.trend_parameters
+
+        # Словарь маппинга системных ключей в русские метки: {'mill_rpm': 'Обороты (об/мин)', ...}
+        key_to_label = {p['key']: p.get('label', p['key']) for p in trend_configs}
+
+        # Определяем список колонок для отображения (Время + те тренды, которые есть в конфиге и в данных)
+        data_cols = [col for col in df.columns if col != 'timestamp']
+
+        # Формируем список заголовков: сначала Время, затем русские метки (или исходное имя, если в конфиге нет метки)
+        headers = ["Время"] + [key_to_label.get(col, col) for col in data_cols]
+        cols_order = ['timestamp'] + data_cols
+
+        self.table_process.setColumnCount(len(cols_order))
+        self.table_process.setHorizontalHeaderLabels(headers)
+
         for i, row in df.iterrows():
             self.table_process.insertRow(i)
-
-
-            self.table_process.setItem(i, 0, QTableWidgetItem(str(row.get('timestamp', ''))))
-            self.table_process.setItem(i, 1, QTableWidgetItem(f"{row.get('temperature_1', 0):.1f}"))
-            self.table_process.setItem(i, 2, QTableWidgetItem(f"{row.get('temperature_2', 0):.1f}"))
-            self.table_process.setItem(i, 3, QTableWidgetItem(f"{row.get('temperature_3', 0):.1f}"))
-            self.table_process.setItem(i, 4, QTableWidgetItem(f"{row.get('current_value', 0):.3f}"))
-            self.table_process.setItem(i, 5, QTableWidgetItem(f"{row.get('acid_flow', 0):.2f}"))
-            self.table_process.setItem(i, 6, QTableWidgetItem(f"{row.get('level_mixer', 0):.1f}"))
-            self.table_process.setItem(i, 7, QTableWidgetItem(f"{row.get('electrodes_pos', 0):.1f}"))
-            self.table_process.setItem(i, 8, QTableWidgetItem(f"{row.get('optimal_temp', 0):.1f}"))
+            for j, col in enumerate(cols_order):
+                val = row.get(col, '')
+                if isinstance(val, float):
+                    val = f"{val:.2f}"
+                self.table_process.setItem(i, j, QTableWidgetItem(str(val)))
 
     def delete_selected_batch(self):
         selected = self.table_batches.selectedItems()
@@ -209,21 +188,20 @@ class KnowledgeBaseScreen(QWidget):
             QMessageBox.warning(self, "Внимание", "Сначала выберите партию в таблице!")
             return
 
-        # Берем ID партии из первой колонки выделенной строки
-        row = selected[0].row()
-        batch_id = self.table_batches.item(row, 0).text()
-
-        # Спрашиваем подтверждение
+        batch_id = self.table_batches.item(selected[0].row(), 0).text()
         reply = QMessageBox.question(
-            self, 'Подтверждение',
-            f"Вы уверены, что хотите полностью удалить партию {batch_id}?\nЭто действие нельзя отменить.",
+            self, 'Подтверждение', f"Удалить партию {batch_id}?",
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No
         )
-
         if reply == QMessageBox.Yes:
             if self.db.delete_batch(batch_id):
                 QMessageBox.information(self, "Успех", f"Партия {batch_id} удалена.")
-                self.load_batches()  # Обновляем список партий
-                self.table_process.setRowCount(0)  # Очищаем нижнюю таблицу
-            else:
-                QMessageBox.critical(self, "Ошибка", "Не удалось удалить данные из базы.")
+                self.load_batches()
+                self.table_process.setRowCount(0)
+                self.table_process.setColumnCount(0)
+
+    def open_import_dialog(self):
+        from app.gui.import_dialog import ImportDataDialog
+        dialog = ImportDataDialog(self.db, self)
+        if dialog.exec_():
+            self.load_batches()

@@ -15,3 +15,24 @@ connection to server at "localhost" (::1), port 5432 failed: В соединен
 	Is the server running on that host and accepting TCP/IP connections?
 
 (Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-02-15 20:31:09 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-15 20:31:11 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-15 20:31:11 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-15 20:31:11 - expert_system.recommender - INFO - ВЫБРАНА ЛУЧШАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-15 20:31:11 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-15 20:36:27 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-15 20:36:32 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-15 20:36:32 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-15 20:36:32 - expert_system.recommender - INFO - ВЫБРАНА ЛУЧШАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-15 20:36:32 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-15 20:53:14 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-15 20:53:17 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-15 20:53:17 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-15 20:53:17 - expert_system.recommender - INFO - ВЫБРАНА ЛУЧШАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-15 20:53:17 - expert_system.recommender - INFO - ---------------------------------------
+2026-02-15 21:11:12 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-15 21:15:23 - expert_system - INFO - База данных инициализирована: sulfate_number добавлен в процессные данные
+2026-02-15 21:15:26 - expert_system.recommender - INFO - --- Запуск поиска эталонной партии ---
+2026-02-15 21:15:26 - expert_system.recommender - INFO - Найдено подходящих кандидатов: 1
+2026-02-15 21:15:26 - expert_system.recommender - INFO - ВЫБРАНА ЛУЧШАЯ ПАРТИЯ: P-2024-001 (Извлечение: 93.08%)
+2026-02-15 21:15:26 - expert_system.recommender - INFO - ---------------------------------------

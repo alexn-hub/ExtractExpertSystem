@@ -1,98 +1,59 @@
+# app/main.py
 import sys
-import os
-
 from pathlib import Path
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget
 
-# --- БЛОК ДЛЯ СБОРКИ EXE ---
-if getattr(sys, 'frozen', False):
-    # Если запущено как скомпилированный EXE
-    basedir = sys._MEIPASS
-else:
-    # Если запущено как обычный скрипт Python
-    basedir = os.path.dirname(os.path.abspath(__file__))
-
-sys.path.append(basedir)
-# ---------------------------------------
-
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QMessageBox, QTabWidget
+# Импорты ваших модулей
 from app.core.database import DatabaseManager
 from app.core.recommender import ProcessRecommender
-from app.gui.input_screen import InputScreen
-from app.gui.work_screen import WorkScreen
-from app.gui.sulfate_unit import SulfateUnit
+from app.gui.sulfate_unit import SulfateUnit  # Класс оставляем, но теперь он универсален!
 from app.gui.kb_screen import KnowledgeBaseScreen
+from app.utils.config import config  # Наш новый конфигуратор
+from app.gui.config_screen import ConfigScreen
 
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Extract Expert System. ДЕМО-версия")
-        self.setMinimumSize(1200, 800)
+        self.setWindowTitle("ИСППР Система Советчика (Универсальная)")
+        self.resize(1400, 900)
 
-        # Ресурсы
+        # Инициализация ядра
         self.db = DatabaseManager()
         self.recommender = ProcessRecommender(self.db)
 
         # Создаем виджет вкладок
         self.tabs = QTabWidget()
 
-        # 1. Создаем аппараты
-        self.unit3 = SulfateUnit("СФР-3", self.recommender, self.db)
-        self.unit4 = SulfateUnit("СФР-4", self.recommender, self.db)
+        # --- ДИНАМИЧЕСКАЯ ГЕНЕРАЦИЯ ВКЛАДОК ИЗ CONFIG.YAML ---
+        self.units = []
+        for unit_name in config.hmi.units:
+            # Создаем вкладку с именем из конфига (например, "Участок измельчения 1")
+            unit_widget = SulfateUnit(unit_name, self.recommender, self.db)
+            self.units.append(unit_widget)
+            self.tabs.addTab(unit_widget, unit_name)
 
-        # 2. Создаем экран Базы Знаний
+        # Создаем экран Базы Знаний
         self.kb_screen = KnowledgeBaseScreen(self.db)
-
-        # Добавляем три вкладки
-        self.tabs.addTab(self.unit3, "СФР-3")
-        self.tabs.addTab(self.unit4, "СФР-4")
         self.tabs.addTab(self.kb_screen, "БАЗА ЗНАНИЙ")
+
+        self.config_screen = ConfigScreen()
+        self.tabs.addTab(self.config_screen, "⚙️ КОНФИГУРАТОР")
+
 
         self.setCentralWidget(self.tabs)
 
-        # Обновляем БЗ при переключении на вкладку
+        # Обновляем БЗ при переключении
         self.tabs.currentChanged.connect(self.handle_tab_change)
 
     def handle_tab_change(self, index):
-        # Если переключились на 2-ю вкладку (БЗ), обновляем таблицу
-        if index == 2:
+        # Если переключились на последнюю вкладку (БЗ) — обновляем таблицу
+        if index == self.tabs.count() - 1:
             self.kb_screen.load_batches()
-
-    def switch_to_sfr(self):
-        sender = self.sender()
-        # Устанавливаем выбор в комбобоксе на экране ввода
-        self.input_screen.combo_sfr.setCurrentText(sender.text())
-        # Возвращаемся на экран ввода
-        self.stacked_widget.setCurrentIndex(0)
-
-    def stop_process(self):
-        # Логика сброса текущей работы
-        self.stacked_widget.setCurrentIndex(0)
-
-    def handle_start_process(self):
-        raw_data = self.input_screen.get_data()
-        best_match = self.recommender.find_best_match(raw_data)
-
-        if best_match:
-            batch_id = best_match['batch_id']
-            history_df = self.db.get_process_data(batch_id)
-
-            if not history_df.empty:
-                self.work_screen.update_data(best_match, history_df)
-                self.stacked_widget.setCurrentIndex(1)
-            else:
-                QMessageBox.warning(self, "Ошибка", f"Данные процесса для партии {batch_id} не найдены.")
-        else:
-            QMessageBox.information(self, "Поиск", "В базе знаний не найдено похожих партий для сравнения.")
 
 
 if __name__ == "__main__":
-    # 1. Создаем экземпляр приложения
     app = QApplication(sys.argv)
-
-    # 2. Создаем и показываем главное окно
     window = MainWindow()
     window.show()
-    # 3. Запускаем цикл обработки событий
     sys.exit(app.exec_())

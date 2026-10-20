@@ -4,13 +4,14 @@ import pandas as pd
 from pathlib import Path
 from typing import List, Dict, Optional, Any
 from datetime import datetime
+import json
 import logging
 from app.utils.config import config
 from app.utils.logger import logger
 
 
 class DatabaseManager:
-    """Менеджер базы данных"""
+    """Универсальный менеджер базы данных с поддержкой динамических конфигураций"""
 
     def __init__(self, db_path: Optional[Path] = None):
         self.db_path = db_path or config.base_dir / 'data' / 'database.db'
@@ -18,25 +19,24 @@ class DatabaseManager:
         self.connection = None
         self._init_database()
 
+    def get_connection(self):
+        if self.connection is None:
+            self.connection = sqlite3.connect(self.db_path, check_same_thread=False)
+            self.connection.execute("PRAGMA foreign_keys = ON")
+        return self.connection
+
     def _init_database(self):
-        """Инициализация структуры базы данных"""
         try:
             with self.get_connection() as conn:
-                # Таблица 1: Методические данные партий (заголовки)
+                # Таблица 1: Паспорт партии (статика сырья хранится в JSON)
                 conn.execute('''
                 CREATE TABLE IF NOT EXISTS batches (
                     batch_id TEXT PRIMARY KEY,
                     extraction_date DATE NOT NULL,
-                    sulfate_number INTEGER NOT NULL,
+                    unit_name TEXT NOT NULL,
                     sample_weight REAL NOT NULL,
-                    ni_percent REAL DEFAULT 0,
-                    cu_percent REAL DEFAULT 0,
-                    pt_percent REAL DEFAULT 0,
-                    pd_percent REAL DEFAULT 0,
-                    sio2_percent REAL DEFAULT 0,
-                    c_percent REAL DEFAULT 0,
-                    se_percent REAL DEFAULT 0,
-                    extraction_percent REAL NOT NULL,
+                    input_params TEXT,               -- JSON со всеми статическими параметрами сырья
+                    target_metric REAL NOT NULL,     -- Целевой показатель (извлечение/качество)
                     process_duration INTEGER,
                     quality_rating INTEGER CHECK(quality_rating BETWEEN 1 AND 5),
                     operator_id TEXT,
@@ -46,192 +46,117 @@ class DatabaseManager:
                 )
                 ''')
 
-                # Таблица 2: Процессные данные (динамика)
+                # Таблица 2: Процессные данные (динамические тренды хранятся в JSON)
                 conn.execute('''
                 CREATE TABLE IF NOT EXISTS process_data (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     batch_id TEXT NOT NULL,
-                    sulfate_number INTEGER, 
                     timestamp TEXT NOT NULL,
-                    temperature_1 REAL,
-                    temperature_2 REAL,
-                    temperature_3 REAL,
-                    acid_flow REAL,
-                    current_value REAL,
-                    electrodes_pos REAL DEFAULT 0,
-                    level_mixer REAL DEFAULT 0,
-                    optimal_temp REAL DEFAULT 0,
+                    process_metrics TEXT,            -- JSON со всеми показателями датчиков за минуту
                     FOREIGN KEY (batch_id) REFERENCES batches(batch_id)
                 )
                 ''')
 
-                # Индексы
-                conn.execute(
-                    'CREATE INDEX IF NOT EXISTS idx_batch_composition ON batches(ni_percent, cu_percent, pt_percent, pd_percent)')
                 conn.execute('CREATE INDEX IF NOT EXISTS idx_process_batch_time ON process_data(batch_id, timestamp)')
-                conn.execute('CREATE INDEX IF NOT EXISTS idx_process_sfr ON process_data(sulfate_number)')
-
-                logger.info("База данных инициализирована: sulfate_number добавлен в процессные данные")
+                logger.info("Универсальная база данных инициализирована.")
         except Exception as e:
             logger.error(f"Ошибка инициализации БД: {e}")
             raise
 
-    def get_connection(self):
-        """Получение соединения с БД"""
-        if self.connection is None:
-            self.connection = sqlite3.connect(
-                self.db_path,
-                check_same_thread=False
-            )
-            # Включение поддержки внешних ключей
-            self.connection.execute("PRAGMA foreign_keys = ON")
-        return self.connection
-
     def add_batch(self, batch_data: Dict):
-        """Добавление информации о партии в таблицу batches"""
+        """Добавление партии с упаковкой статических параметров в JSON"""
         try:
-            # Чистка от NaN
-            clean_data = {k: (None if pd.isna(v) or v == "" else v) for k, v in batch_data.items()}
+            input_params_dict = {}
+            # Собираем все статические параметры, определенные в конфиге
+            for param in config.hmi.static_parameters:
+                key = param['key']
+                if key in batch_data:
+                    input_params_dict[key] = batch_data[key]
+
+            clean_data = {
+                'batch_id': batch_data.get('batch_id'),
+                'extraction_date': batch_data.get('extraction_date', datetime.now().strftime('%Y-%m-%d')),
+                'unit_name': batch_data.get('unit_name', 'Участок-1'),
+                'sample_weight': batch_data.get('sample_weight', 0.0),
+                'input_params': json.dumps(input_params_dict),
+                'target_metric': batch_data.get('target_metric', batch_data.get('extraction_percent', 0.0))
+            }
 
             with self.get_connection() as conn:
                 query = '''
                 INSERT OR REPLACE INTO batches (
-                    batch_id, extraction_date, sulfate_number, sample_weight,
-                    ni_percent, cu_percent, pt_percent, pd_percent,
-                    sio2_percent, c_percent, se_percent, extraction_percent
+                    batch_id, extraction_date, unit_name, sample_weight,
+                    input_params, target_metric
                 ) VALUES (
-                    :batch_id, :extraction_date, :sulfate_number, :sample_weight,
-                    :ni_percent, :cu_percent, :pt_percent, :pd_percent,
-                    :sio2_percent, :c_percent, :se_percent, :extraction_percent
+                    :batch_id, :extraction_date, :unit_name, :sample_weight,
+                    :input_params, :target_metric
                 )
                 '''
                 conn.execute(query, clean_data)
                 conn.commit()
                 logger.info(f"Партия {clean_data['batch_id']} успешно сохранена.")
         except Exception as e:
-            logger.error(f"Ошибка сохранения партии {batch_data.get('batch_id')}: {e}")
+            logger.error(f"Ошибка сохранения партии: {e}")
             raise
 
-    def get_all_batches(self):
-        """Возвращает список всех партий из базы для анализа рекомендателем"""
-        query = "SELECT * FROM batches"
+    def get_all_batches(self) -> List[Dict]:
+        """Получение всех партий из базы"""
         try:
-            import sqlite3
-            import pandas as pd
-            with sqlite3.connect(self.db_path) as conn:
+            with self.get_connection() as conn:
+                query = "SELECT * FROM batches"
                 df = pd.read_sql_query(query, conn)
-                return df.to_dict('records')  # Превращаем в список словарей
+                return df.to_dict('records')
         except Exception as e:
-            print(f"Ошибка при получении всех партий: {e}")
+            logger.error(f"Ошибка при получении всех партий: {e}")
             return []
 
-    def add_process_data(self, batch_id: str, sulfate_number: int, process_records: List[Dict]) -> bool:
+    def add_process_data(self, batch_id: str, process_records: List[Dict]) -> bool:
+        """Добавление процессных данных с упаковкой в JSON"""
         try:
             with self.get_connection() as conn:
                 cursor = conn.cursor()
-
-                sql = '''
-                INSERT INTO process_data 
-                (batch_id, sulfate_number, timestamp, temperature_1, temperature_2, 
-                 temperature_3, acid_flow, current_value, electrodes_pos, level_mixer, optimal_temp)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                '''
+                sql = 'INSERT INTO process_data (batch_id, timestamp, process_metrics) VALUES (?, ?, ?)'
 
                 for record in process_records:
-                    params = (
-                        batch_id,
-                        sulfate_number,
-                        record.get('timestamp'),
-                        record.get('temperature_1', 0.0),
-                        record.get('temperature_2', 0.0),
-                        record.get('temperature_3', 0.0),
-                        record.get('acid_flow', 0.0),
-                        record.get('current_value', 0.0),
-                        record.get('electrodes_pos', 0.0),
-                        record.get('level_mixer', 0.0),
-                        record.get('optimal_temp', 0.0)
-                    )
-                    cursor.execute(sql, params)
+                    timestamp = record.get('timestamp')
+                    # Сохраняем все метрики датчиков, кроме служебных полей
+                    metrics = {k: v for k, v in record.items() if k not in ['timestamp', 'batch_id', 'unit_name']}
+                    cursor.execute(sql, (batch_id, str(timestamp), json.dumps(metrics)))
 
                 conn.commit()
-                logger.info(f"Добавлено {len(process_records)} записей для партии {batch_id} (СФР-{sulfate_number})")
+                logger.info(f"Добавлено {len(process_records)} записей процесса для партии {batch_id}")
                 return True
         except Exception as e:
             logger.error(f"Ошибка добавления процессных данных для {batch_id}: {e}")
             return False
 
-    def find_similar_batches(self, sample_data: Dict[str, float],
-                             limit: int = 10) -> pd.DataFrame:
-        """Поиск похожих партий по составу"""
-        try:
-            with self.get_connection() as conn:
-                query = '''
-                SELECT * FROM batches 
-                WHERE is_good = 1 
-                AND sample_weight BETWEEN ? AND ?
-                ORDER BY extraction_percent DESC
-                LIMIT ?
-                '''
-
-                # Расчет диапазона веса (±15%)
-                weight = sample_data.get('sample_weight', 100)
-                min_weight = weight * 0.85
-                max_weight = weight * 1.15
-
-                df = pd.read_sql_query(
-                    query,
-                    conn,
-                    params=[min_weight, max_weight, limit]
-                )
-
-                logger.info(f"Найдено {len(df)} похожих партий")
-                return df
-
-        except Exception as e:
-            logger.error(f"Ошибка поиска похожих партий: {e}")
-            return pd.DataFrame()
-
     def get_process_data(self, batch_id: str) -> pd.DataFrame:
-        """Получение процессных данных по номеру партии"""
+        """Получение процессных данных и распаковка из JSON в DataFrame"""
         try:
             with self.get_connection() as conn:
-                query = '''
-                SELECT * FROM process_data 
-                WHERE batch_id = ? 
-                ORDER BY timestamp
-                '''
+                query = 'SELECT timestamp, process_metrics FROM process_data WHERE batch_id = ? ORDER BY timestamp'
+                df_raw = pd.read_sql_query(query, conn, params=[batch_id])
 
-                df = pd.read_sql_query(query, conn, params=[batch_id])
-                return df
+                if df_raw.empty:
+                    return pd.DataFrame()
 
+                records = []
+                for _, row in df_raw.iterrows():
+                    metrics = json.loads(row['process_metrics']) if row['process_metrics'] else {}
+                    metrics['timestamp'] = row['timestamp']
+                    records.append(metrics)
+
+                return pd.DataFrame(records)
         except Exception as e:
             logger.error(f"Ошибка получения процессных данных: {e}")
             return pd.DataFrame()
 
-    def execute_query(self, query: str) -> Any:
-        """Универсальное выполнение SQL запросов"""
-        try:
-            query_lower = query.strip().lower()
-            with self.get_connection() as conn:
-                if query_lower.startswith('select'):
-                    return pd.read_sql_query(query, conn)
-                else:
-                    cursor = conn.cursor()
-                    cursor.execute(query)
-                    conn.commit()
-                    return cursor.rowcount  # Возвращаем кол-во измененных строк
-        except Exception as e:
-            logger.error(f"Ошибка выполнения запроса: {e}")
-            raise
-
     def delete_batch(self, batch_id: str):
-        """Полное удаление партии и всех её процессных данных"""
+        """Удаление партии и связанных с ней процессных данных"""
         try:
             with self.get_connection() as conn:
                 cursor = conn.cursor()
-                # Удаляем данные процесса
                 cursor.execute("DELETE FROM process_data WHERE batch_id = ?", (batch_id,))
-                # Удаляем саму партию
                 cursor.execute("DELETE FROM batches WHERE batch_id = ?", (batch_id,))
                 conn.commit()
                 return True
@@ -240,13 +165,6 @@ class DatabaseManager:
             return False
 
     def close(self):
-        """Закрытие соединения с БД"""
         if self.connection:
             self.connection.close()
             self.connection = None
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()

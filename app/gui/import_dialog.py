@@ -1,213 +1,112 @@
+# app/gui/import_dialog.py
 import pandas as pd
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QGridLayout, QLineEdit,
-    QPushButton, QLabel, QFileDialog, QMessageBox, QGroupBox, QHBoxLayout, QComboBox, QScrollArea, QWidget,
-    QTabWidget, QApplication
+    QDialog, QVBoxLayout, QGridLayout, QLineEdit, QPushButton, QLabel,
+    QFileDialog, QMessageBox, QGroupBox, QHBoxLayout, QComboBox, QScrollArea, QWidget
 )
 from PyQt5.QtCore import Qt
-from app.core.data_importer import ExternalDBImporter
+from app.utils.config import config
 
 
 class ImportDataDialog(QDialog):
+    """Диалог импорта данных с жестким маппингом по конфигуратору трендов"""
+
     def __init__(self, db_manager, parent=None):
         super().__init__(parent)
         self.db = db_manager
-        self.sql_importer = ExternalDBImporter()
         self.filepath = ""
-        self.setWindowTitle("Импорт новой партии в БЗ")
-        self.setMinimumWidth(800)
-        self.setMinimumHeight(600)
+        self.combos = {}
+        self.setWindowTitle("Импорт новой партии в Базу Знаний")
+        self.setMinimumWidth(850)
+        self.setMinimumHeight(650)
         self.init_ui()
 
     def init_ui(self):
-        self.main_layout = QVBoxLayout(self)
-
-        # Создаем вкладки
-        self.tabs = QTabWidget()
-
-        # Вкладка 1: Ручной импорт / Excel
-        self.excel_tab = QWidget()
-        self.setup_excel_ui()
-
-        # Вкладка 2: Импорт из SQL БД
-        self.sql_tab = QWidget()
-        self.setup_sql_ui()
-
-        self.tabs.addTab(self.excel_tab, "Файлы")
-        self.tabs.addTab(self.sql_tab, "БД (SQL)")
-
-        self.main_layout.addWidget(self.tabs)
-
-    def setup_excel_ui(self):
-
-        layout = QVBoxLayout(self.excel_tab)
+        layout = QVBoxLayout(self)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         content_widget = QWidget()
         scroll_layout = QVBoxLayout(content_widget)
 
-        # --- 1. Основные параметры ---
-        batch_group = QGroupBox("Параметры партии")
+        # 1. Паспорт партии (Общие данные)
+        batch_group = QGroupBox("Параметры партии (Паспорт)")
         grid_main = QGridLayout()
-        self.edit_id = QLineEdit();
-        self.edit_id.setPlaceholderText("P-2026-XXX")
-        self.edit_mass = QLineEdit();
-        self.edit_mass.setPlaceholderText("кг")
-        self.edit_ext = QLineEdit();
-        self.edit_ext.setPlaceholderText("%")
-        self.edit_sfr = QLineEdit();
-        self.edit_sfr.setPlaceholderText("3 или 4")
-        grid_main.addWidget(QLabel("ID Партии:"), 0, 0);
+
+        self.edit_id = QLineEdit()
+        self.edit_id.setPlaceholderText(config.hmi.passport_fields.get('id_placeholder', 'P-2026-001'))
+
+        self.edit_mass = QLineEdit()
+        self.edit_mass.setPlaceholderText(config.hmi.passport_fields.get('main_metric_label', 'Масса'))
+
+        self.edit_ext = QLineEdit()
+        self.edit_ext.setPlaceholderText("0-100%")
+
+        self.edit_unit = QComboBox()
+        self.edit_unit.addItems(config.hmi.units)
+
+        grid_main.addWidget(QLabel("ID Партии:"), 0, 0)
         grid_main.addWidget(self.edit_id, 0, 1)
-        grid_main.addWidget(QLabel("СФР:"), 1, 0);
-        grid_main.addWidget(self.edit_sfr, 1, 1)
-        grid_main.addWidget(QLabel("Масса:"), 0, 2);
-        grid_main.addWidget(self.edit_mass, 0, 3)
-        grid_main.addWidget(QLabel("Извлечение:"), 1, 2);
+        grid_main.addWidget(QLabel("Участок / Аппарат:"), 0, 2)
+        grid_main.addWidget(self.edit_unit, 0, 3)
+
+        grid_main.addWidget(QLabel(config.hmi.passport_fields.get('main_metric_label', 'Масса:')), 1, 0)
+        grid_main.addWidget(self.edit_mass, 1, 1)
+        grid_main.addWidget(QLabel(config.hmi.target_parameter.get('label', 'Целевой показатель (%):')), 1, 2)
         grid_main.addWidget(self.edit_ext, 1, 3)
+
         batch_group.setLayout(grid_main)
         scroll_layout.addWidget(batch_group)
 
-        # --- 2. Химический состав ---
-        chem_group = QGroupBox("Химический состав (%)")
+        # 2. Статические параметры сырья (из конфигуратора)
+        chem_group = QGroupBox("Свойства сырья (Статика)")
         grid_chem = QGridLayout()
-        self.chem_inputs = {
-            'ni_percent': QLineEdit("0.0"), 'cu_percent': QLineEdit("0.0"),
-            'pt_percent': QLineEdit("0.0"), 'pd_percent': QLineEdit("0.0"),
-            'sio2_percent': QLineEdit("0.0"), 'c_percent': QLineEdit("0.0"),
-            'se_percent': QLineEdit("0.0")
-        }
-        names = [("Ni", "ni_percent"), ("Cu", "cu_percent"), ("Pt", "pt_percent"),
-                 ("Pd", "pd_percent"), ("SiO2", "sio2_percent"), ("C", "c_percent"), ("Se", "se_percent")]
-        for i, (label, key) in enumerate(names):
-            grid_chem.addWidget(QLabel(f"{label}:"), i // 2, (i % 2) * 2)
-            grid_chem.addWidget(self.chem_inputs[key], i // 2, (i % 2) * 2 + 1)
+        self.chem_inputs = {}
+
+        for i, param in enumerate(config.hmi.static_parameters):
+            row, col = divmod(i, 2)
+            label_text = param.get('label', param['key'])
+            default_val = str(param.get('default', 0.0))
+
+            grid_chem.addWidget(QLabel(f"{label_text}:"), row, col * 2)
+            edit = QLineEdit(default_val)
+            grid_chem.addWidget(edit, row, col * 2 + 1)
+            self.chem_inputs[param['key']] = edit
+
         chem_group.setLayout(grid_chem)
         scroll_layout.addWidget(chem_group)
 
-        # --- 3. Файл ---
-        file_group = QGroupBox("Файл данных")
+        # 3. Выбор файла
+        file_group = QGroupBox("Файл процессных данных (Архив трендов)")
         file_layout = QHBoxLayout()
         self.lbl_file = QLabel("Файл не выбран")
-        btn_select = QPushButton("📁 Выбрать Excel/CSV")
+        btn_select = QPushButton("📁 Выбрать Excel / CSV")
         btn_select.clicked.connect(self.select_file)
         file_layout.addWidget(self.lbl_file)
         file_layout.addWidget(btn_select)
         file_group.setLayout(file_layout)
         scroll_layout.addWidget(file_group)
 
-        # --- 4. МАППИНГ (С ТАЙМСТЕМПОМ) ---
-        self.mapping_group = QGroupBox("Сопоставление столбцов процесса")
+        # 4. Ручной маппинг колонок (Динамически из trend_parameters)
+        self.mapping_group = QGroupBox("Сопоставление колонок техпроцесса (из Конфигуратора)")
         self.mapping_grid = QGridLayout()
         self.mapping_group.setLayout(self.mapping_grid)
         self.mapping_group.hide()
         scroll_layout.addWidget(self.mapping_group)
+
         scroll_layout.addStretch()
         scroll.setWidget(content_widget)
-
         layout.addWidget(scroll)
 
+        # Кнопка сохранения
         self.btn_save = QPushButton("✅ ЗАГРУЗИТЬ В БАЗУ")
-        self.btn_save.setFixedHeight(45)
-        self.btn_save.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold;")
+        self.btn_save.setFixedHeight(50)
+        self.btn_save.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold; font-size: 11pt;")
         self.btn_save.clicked.connect(self.save_data)
         self.btn_save.setEnabled(False)
         layout.addWidget(self.btn_save)
 
-        # Список полей для процесса
-        self.required_fields = {
-            "timestamp": "Дата и время (Timestamp)",
-            "temperature_1": "Т раствора 1 (°C)",
-            "temperature_2": "Т раствора 2 (°C)",
-            "temperature_3": "Т газа (°C)",
-            "current_value": "Ток (А)",
-            "acid_flow": "Расход кислоты (т)",
-            "level_mixer": "Уровень миксера",
-            "electrodes_pos": "Позиция электрода",
-            "optimal_temp": "Опт. температура"
-        }
-        self.combos = {}
-
-    def run_sql_sync(self):
-        """Логика подключения и импорта из SQL"""
-        self.btn_run_sql.setEnabled(False)
-        self.btn_run_sql.setText("Подключение...")
-        QApplication.processEvents()
-
-        success = self.sql_importer.connect_external(
-            self.db_type.currentText(),
-            self.db_host.text(),
-            self.db_port.text(),
-            self.db_user.text(),
-            self.db_pass.text(),
-            self.db_name.text()
-        )
-
-        if not success:
-            QMessageBox.critical(self, "Ошибка связи", "Не удалось установить соединение с сервером БД.")
-            self.btn_run_sql.setEnabled(True)
-            self.btn_run_sql.setText("ЗАПУСТИТЬ СИНХРОНИЗАЦИЮ")
-            return
-
-        self.btn_run_sql.setText("Загрузка данных...")
-        QApplication.processEvents()
-
-        count = self.sql_importer.import_good_batches(days_back=30)
-
-        if count > 0:
-            QMessageBox.information(self, "Успех", f"Синхронизация завершена!\nИмпортировано партий: {count}")
-            self.accept()
-        else:
-            QMessageBox.warning(self, "Результат", "Новых данных для импорта не обнаружено.")
-            self.btn_run_sql.setEnabled(True)
-            self.btn_run_sql.setText("ЗАПУСТИТЬ СИНХРОНИЗАЦИЮ")
-
-    def setup_sql_ui(self):
-        layout = QVBoxLayout(self.sql_tab)
-
-        conn_group = QGroupBox("Параметры подключения к внешней БД")
-        grid = QGridLayout()
-
-        self.db_type = QComboBox()
-        self.db_type.addItems(["PostgreSQL", "MSSQL"])
-
-        self.db_host = QLineEdit("localhost")
-        self.db_port = QLineEdit("5432")
-        self.db_user = QLineEdit("postgres")
-        self.db_pass = QLineEdit()
-        self.db_pass.setEchoMode(QLineEdit.Password)
-        self.db_name = QLineEdit("factory_db")
-
-        grid.addWidget(QLabel("Тип БД:"), 0, 0);
-        grid.addWidget(self.db_type, 0, 1)
-        grid.addWidget(QLabel("Хост:"), 1, 0);
-        grid.addWidget(self.db_host, 1, 1)
-        grid.addWidget(QLabel("Порт:"), 2, 0);
-        grid.addWidget(self.db_port, 2, 1)
-        grid.addWidget(QLabel("Пользователь:"), 3, 0);
-        grid.addWidget(self.db_user, 3, 1)
-        grid.addWidget(QLabel("Пароль:"), 4, 0);
-        grid.addWidget(self.db_pass, 4, 1)
-        grid.addWidget(QLabel("Имя БД:"), 5, 0);
-        grid.addWidget(self.db_name, 5, 1)
-
-        conn_group.setLayout(grid)
-        layout.addWidget(conn_group)
-
-        info_label = QLabel("Будут загружены только успешные партии за последние 30 дней\n"
-                            "(Извлечение > 85%, оценка качества >= 4)")
-        info_label.setStyleSheet("color: #666; font-style: italic;")
-        layout.addWidget(info_label)
-
-        self.btn_run_sql = QPushButton("ЗАПУСТИТЬ СИНХРОНИЗАЦИЮ")
-        self.btn_run_sql.setFixedHeight(50)
-        self.btn_run_sql.setStyleSheet("background-color: #E3F2FD; font-weight: bold;")
-        self.btn_run_sql.clicked.connect(self.run_sql_sync)
-        layout.addWidget(self.btn_run_sql)
-        layout.addStretch()
-
     def select_file(self):
-        file, _ = QFileDialog.getOpenFileName(self, "Выбор", "", "Data (*.xlsx *.csv)")
+        file, _ = QFileDialog.getOpenFileName(self, "Выбор файла", "", "Data (*.xlsx *.csv)")
         if file:
             try:
                 self.filepath = file
@@ -218,15 +117,26 @@ class ImportDataDialog(QDialog):
                 QMessageBox.critical(self, "Ошибка", f"Файл не читается: {e}")
 
     def setup_mapping_ui(self, columns):
+        """Динамическое построение полей маппинга строго под тренды из конфигуратора"""
         for i in reversed(range(self.mapping_grid.count())):
-            self.mapping_grid.itemAt(i).widget().setParent(None)
+            item = self.mapping_grid.itemAt(i)
+            if item and item.widget():
+                item.widget().setParent(None)
 
+        self.combos.clear()
         cols_with_skip = ["-- Пропустить --"] + columns
-        for i, (key, label) in enumerate(self.required_fields.items()):
+
+        # Сначала обязательное поле времени
+        required_fields = {"timestamp": "Дата и время (Timestamp / Время)"}
+        # Затем добавляем ВСЕ тренды, которые инженер настроил в Конфигураторе
+        for param in config.hmi.trend_parameters:
+            required_fields[param['key']] = param.get('label', param['key'])
+
+        for i, (key, label) in enumerate(required_fields.items()):
             combo = QComboBox()
             combo.addItems(cols_with_skip)
 
-            # Авто-поиск
+            # Автоматический подбор похожего названия колонки в файле
             for col in columns:
                 if key.lower() in col.lower() or label.split(' ')[0].lower() in col.lower():
                     combo.setCurrentText(col)
@@ -242,88 +152,82 @@ class ImportDataDialog(QDialog):
     def save_data(self):
         try:
             batch_id = self.edit_id.text().strip()
-            if not batch_id: raise ValueError("Укажите ID партии!")
+            if not batch_id:
+                raise ValueError("Укажите ID партии!")
 
-            # --- Вспомогательная функция для валидации ---
-            def clean_and_validate(widget, name, is_percent=True):
-                val_str = widget.text().replace(',', '.')
-                if not val_str: return 0.0
+            def clean_float(text, name, is_percent=False):
+                val_str = text.replace(',', '.')
+                if not val_str:
+                    return 0.0
                 val = float(val_str)
                 if is_percent and not (0 <= val <= 100):
                     raise ValueError(f"Поле '{name}' должно быть в диапазоне от 0 до 100!")
                 return val
 
-            # 1. Чтение данных
+            # Читаем исходный файл
             df = pd.read_csv(self.filepath) if self.filepath.endswith('.csv') else pd.read_excel(self.filepath)
 
-            # 2. Формируем маппинг из комбобоксов
-            rename_map = {}
-            for internal_name, combo in self.combos.items():
-                excel_col_name = combo.currentText()
-                if excel_col_name != "-- Пропустить --":
-                    rename_map[excel_col_name] = internal_name
+            # Проверяем маппинг времени
+            time_combo = self.combos.get('timestamp')
+            if not time_combo or time_combo.currentText() == "-- Пропустить --":
+                raise ValueError("Поле 'Дата и время (Timestamp)' обязательно для сопоставления!")
 
-            if 'timestamp' not in rename_map.values():
-                raise ValueError("Поле Timestamp обязательно!")
+            excel_time_col = time_combo.currentText()
 
-            # Создаем рабочий DataFrame
-            process_df = df[list(rename_map.keys())].rename(columns=rename_map)
+            # Готовим чистый датафрейм процесса
+            process_records = []
 
-            # --- ЖЕСТКАЯ ОЧИСТКА ДАННЫХ ---
-            process_df['timestamp'] = process_df['timestamp'].astype(str).str.strip()
-            excel_time_col_name = self.combos['timestamp'].currentText().strip()
+            # Собираем список всех ключей трендов из конфигуратора, которые нужно вытащить
+            trend_keys = [param['key'] for param in config.hmi.trend_parameters]
 
-            process_df = process_df[
-                (process_df['timestamp'] != excel_time_col_name) &
-                (process_df['timestamp'].str.lower() != "время")
-                ]
-            process_df = process_df.dropna(subset=['timestamp'])
-            process_df = process_df[process_df['timestamp'] != "nan"]
+            for _, row in df.iterrows():
+                # Пропускаем строки-заголовки, если они попали в данные
+                t_val = str(row.get(excel_time_col, '')).strip()
+                if t_val in ["", "nan", "None", excel_time_col.lower(), "время", "timestamp"]:
+                    continue
 
-            # РАСШИРЕННЫЙ СПИСОК СТОЛБЦОВ: добавили level_mixer, electrode_pos, optimal_temp
-            float_cols = [
-                'temperature_1', 'temperature_2', 'temperature_3',
-                'current_value', 'acid_flow',
-                'level_mixer', 'electrodes_pos', 'optimal_temp'
-            ]
+                record = {'timestamp': t_val}
 
-            for col in float_cols:
-                if col in process_df.columns:
-                    process_df[col] = pd.to_numeric(process_df[col], errors='coerce').fillna(0.0)
-                else:
-                    process_df[col] = 0.0
-            # --- КОНЕЦ ОЧИСТКИ ---
+                # Для каждого тренда из конфигуратора проверяем, сопоставил ли его пользователь
+                for key in trend_keys:
+                    combo = self.combos.get(key)
+                    if combo and combo.currentText() != "-- Пропустить --":
+                        excel_col = combo.currentText()
+                        val = row.get(excel_col, 0.0)
+                        try:
+                            record[key] = float(str(val).replace(',', '.'))
+                        except (ValueError, TypeError):
+                            record[key] = 0.0
+                    else:
+                        # Если колонка пропущена, ставим 0.0
+                        record[key] = 0.0
 
-            # 3. Сохранение партии (batches) с проверками
-            sfr_val = self.edit_sfr.text().strip()
-            if sfr_val not in ['3', '4']:
-                raise ValueError("Номер СФР должен быть только 3 или 4!")
+                process_records.append(record)
 
-            sfr_int = int(sfr_val)
+            if not process_records:
+                raise ValueError("Не удалось извлечь ни одной валидной строки процессных данных из файла!")
 
+            # Собираем данные паспорта партии
             batch_data = {
                 'batch_id': batch_id,
                 'extraction_date': pd.Timestamp.now().strftime('%Y-%m-%d'),
-                'sulfate_number': sfr_int,
-                'sample_weight': clean_and_validate(self.edit_mass, "Масса", is_percent=False),
-                'extraction_percent': clean_and_validate(self.edit_ext, "Извлечение")
+                'unit_name': self.edit_unit.currentText(),
+                'sample_weight': clean_float(self.edit_mass.text(), "Масса", is_percent=False),
+                'target_metric': clean_float(self.edit_ext.text(),
+                                             config.hmi.target_parameter.get('label', 'Целевой показатель'),
+                                             is_percent=True)
             }
 
-            # Добавляем химию с проверкой на 0-100%
-            if hasattr(self, 'chem_inputs'):
-                chem_names = {'ni_percent': 'Ni', 'cu_percent': 'Cu', 'pt_percent': 'Pt',
-                              'pd_percent': 'Pd', 'sio2_percent': 'SiO2', 'c_percent': 'C', 'se_percent': 'Se'}
-                for key, edit in self.chem_inputs.items():
-                    batch_data[key] = clean_and_validate(edit, chem_names.get(key, key))
+            # Добираем статические параметры сырья из конфига
+            for key, edit in self.chem_inputs.items():
+                batch_data[key] = clean_float(edit.text(), key, is_percent=False)
 
+            # Сохраняем в БД
             self.db.add_batch(batch_data)
+            self.db.add_process_data(batch_id, process_records)
 
-            # 4. Сохранение процесса (process_data)
-            process_df['timestamp'] = process_df['timestamp'].astype(str)
-            records = process_df.to_dict('records')
-
-            self.db.add_process_data(batch_id, sfr_int, records)
-            QMessageBox.information(self, "Готово", f"Успешно загружено {len(records)} строк для СФР-{sfr_int}")
+            QMessageBox.information(self, "Готово",
+                                    f"Успешно загружено {len(process_records)} строк процессных данных строго по конфигурации!")
             self.accept()
 
         except ValueError as ve:

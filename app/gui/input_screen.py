@@ -1,85 +1,72 @@
+# app/gui/input_screen.py
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QGridLayout, QLineEdit,
-    QPushButton, QLabel, QComboBox, QGroupBox
+    QPushButton, QLabel, QGroupBox, QMessageBox
 )
 from PyQt5.QtCore import Qt
+from app.utils.config import config
 
 
 class InputScreen(QWidget):
-    def __init__(self, unit_name="", parent=None):
+    """Динамический экран ввода параметров сырья на основе конфигурации"""
+
+    def __init__(self, unit_name, parent=None):
         super().__init__(parent)
         self.unit_name = unit_name
         self.init_ui()
 
     def init_ui(self):
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(50, 50, 50, 50)
-        layout.setSpacing(20)
+        layout.setContentsMargins(40, 40, 40, 40)
+        layout.setSpacing(15)
 
-        # Заголовок
-        title = QLabel("Ввод данных новой партии")
-        title.setStyleSheet("font-size: 18pt; font-weight: bold;")
+        title = QLabel(f"Ввод параметров партии: {self.unit_name}")
+        title.setStyleSheet("font-size: 16pt; font-weight: bold; color: #263238;")
         title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
 
-        # Основная форма
-        form_group = QGroupBox("Общая информация")
+        # Общая информация
+        form_group = QGroupBox("Общие параметры")
         form_layout = QGridLayout()
 
-        form_layout.addWidget(QLabel("Номер партии:"), 1, 0)
-        self.edit_batch_id = QLineEdit("P-2026-001")
-        form_layout.addWidget(self.edit_batch_id, 1, 1)
+        passport_cfg = config.hmi.passport_fields
+        form_layout.addWidget(QLabel("ID Партии:"), 0, 0)
+        self.edit_batch_id = QLineEdit(passport_cfg.get('id_placeholder', 'P-2026-001'))
+        form_layout.addWidget(self.edit_batch_id, 0, 1)
 
-        form_layout.addWidget(QLabel("Масса (кг):"), 2, 0)
-        self.edit_weight = QLineEdit("1042.08")
-        form_layout.addWidget(self.edit_weight, 2, 1)
+        form_layout.addWidget(QLabel(passport_cfg.get('main_metric_label', 'Масса (кг):')), 1, 0)
+        self.edit_weight = QLineEdit(str(passport_cfg.get('default_main_metric', '1000.0')))
+        form_layout.addWidget(self.edit_weight, 1, 1)
 
         form_group.setLayout(form_layout)
         layout.addWidget(form_group)
 
-        # Сетка для химического состава
-        # Создаем словарь соответствия ключей и тестовых значений
-        test_values = {
-            "ni_percent": "1.57",
-            "cu_percent": "1.58",
-            "pt_percent": "8.37",
-            "pd_percent": "33.62",
-            "sio2_percent": "9.80",
-            "c_percent": "9.86",
-            "se_percent": "1.49"
-        }
+        # Динамические параметры сырья (из конфига)
+        params_group = QGroupBox("Свойства сырья / Химический состав")
+        params_layout = QGridLayout()
+        self.dynamic_inputs = {}
 
-        chem_group = QGroupBox("Химический состав (%)")
-        chem_layout = QGridLayout()
-
-        self.inputs = {}
-        elements = [
-            ("Ni", "ni_percent"), ("Cu", "cu_percent"),
-            ("Pt", "pt_percent"), ("Pd", "pd_percent"),
-            ("SiO2", "sio2_percent"), ("C", "c_percent"), ("Se", "se_percent")
-        ]
-
-        for i, (name, key) in enumerate(elements):
+        for i, param in enumerate(config.hmi.static_parameters):
             row, col = divmod(i, 2)
-            chem_layout.addWidget(QLabel(f"{name}:"), row, col * 2)
+            label_text = param.get('label', param['key'])
+            default_val = str(param.get('default', 0.0))
 
-            val = test_values.get(key, "0")
-            edit = QLineEdit(val)
-            chem_layout.addWidget(edit, row, col * 2 + 1)
-            self.inputs[key] = edit
+            params_layout.addWidget(QLabel(f"{label_text}:"), row, col * 2)
+            edit = QLineEdit(default_val)
+            params_layout.addWidget(edit, row, col * 2 + 1)
+            self.dynamic_inputs[param['key']] = edit
 
-        chem_group.setLayout(chem_layout)
-        layout.addWidget(chem_group)
+        params_group.setLayout(params_layout)
+        layout.addWidget(params_group)
 
-
-        # Кнопка ОК
+        # Кнопка подтверждения
         self.btn_start = QPushButton("Подтвердить данные партии")
-        self.btn_start.setMinimumHeight(60)
+        self.btn_start.setMinimumHeight(55)
         self.btn_start.setStyleSheet("""
             QPushButton {
                 background-color: #2E7D32;
                 color: white;
-                font-size: 14pt;
+                font-size: 13pt;
                 font-weight: bold;
                 border-radius: 5px;
             }
@@ -87,7 +74,6 @@ class InputScreen(QWidget):
         """)
         layout.addWidget(self.btn_start)
         layout.addStretch()
-
 
     def get_data(self):
         def clean_float(text):
@@ -97,34 +83,29 @@ class InputScreen(QWidget):
                 return None
 
         try:
-            # 1. Проверка массы (Извлечение отсюда УДАЛИЛИ)
             weight = clean_float(self.edit_weight.text())
-
             if weight is None:
-                raise ValueError("Поле 'Масса' заполнено неверно")
+                raise ValueError("Поле главного параметра (массы) заполнено неверно!")
 
-            # 2. Формируем словарь
+            batch_id = self.edit_batch_id.text().strip()
+            if not batch_id:
+                raise ValueError("Укажите ID партии!")
+
             data = {
-                'sulfate_number': int(self.unit_name.split('-')[-1]),
-                'batch_id': self.edit_batch_id.text(),
+                'unit_name': self.unit_name,
+                'batch_id': batch_id,
                 'sample_weight': weight,
             }
 
-            # 3. Собираем химию
-            for key, edit in self.inputs.items():
-                val = clean_float(edit.text())
+            # Считываем статические параметры из динамических полей ввода
+            for param in config.hmi.static_parameters:
+                key = param['key']
+                val = clean_float(self.dynamic_inputs[key].text())
                 if val is None:
-                    element_name = next((e[0] for e in [
-                        ("Ni", "ni_percent"), ("Cu", "cu_percent"), ("Pt", "pt_percent"),
-                        ("Pd", "pd_percent"), ("SiO2", "sio2_percent"), ("C", "c_percent"),
-                        ("Se", "se_percent")
-                    ] if e[1] == key), key)
-                    raise ValueError(f"Ошибка в поле химического состава: {element_name}")
+                    raise ValueError(f"Ошибка ввода в поле: {param['label']}")
                 data[key] = val
 
             return data
-
         except ValueError as e:
-            from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self, "Ошибка ввода", str(e))
             return None
