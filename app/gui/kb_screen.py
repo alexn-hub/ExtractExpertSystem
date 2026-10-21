@@ -1,4 +1,3 @@
-# app/gui/kb_screen.py
 import json
 import pandas as pd
 from PyQt5.QtWidgets import (
@@ -8,10 +7,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from app.utils.config import config
 
-
 class KnowledgeBaseScreen(QWidget):
     """Динамический экран Базы Знаний, адаптирующийся под конфигурацию"""
-
     def __init__(self, db_manager, parent=None):
         super().__init__(parent)
         self.db = db_manager
@@ -22,7 +19,6 @@ class KnowledgeBaseScreen(QWidget):
         layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(10)
 
-        # Фильтры и кнопки
         filter_group = QGroupBox("Параметры поиска")
         filter_layout = QHBoxLayout()
 
@@ -33,8 +29,7 @@ class KnowledgeBaseScreen(QWidget):
         self.filter_mass_min = QLineEdit()
         self.filter_mass_min.setPlaceholderText("Мин. масса")
 
-        btn_width = 160
-        btn_height = 40
+        btn_width, btn_height = 160, 40
 
         self.btn_search = QPushButton("🔍 ОБНОВИТЬ")
         self.btn_search.setFixedSize(btn_width, btn_height)
@@ -62,7 +57,6 @@ class KnowledgeBaseScreen(QWidget):
         filter_group.setLayout(filter_layout)
         layout.addWidget(filter_group)
 
-        # Таблица партий (Верхняя)
         layout.addWidget(QLabel("<b>Реестр партий / процессов:</b>"))
         self.table_batches = QTableWidget()
         self.table_batches.verticalHeader().setDefaultSectionSize(25)
@@ -76,7 +70,6 @@ class KnowledgeBaseScreen(QWidget):
         line.setFrameShape(QFrame.HLine)
         layout.addWidget(line)
 
-        # Таблица процесса (Нижняя)
         self.lbl_process_title = QLabel("<b>Подробные параметры тех. процесса:</b>")
         layout.addWidget(self.lbl_process_title)
 
@@ -89,16 +82,13 @@ class KnowledgeBaseScreen(QWidget):
         self.load_batches()
 
     def load_batches(self):
-        """Динамическое построение шапки таблицы и загрузка партий"""
         all_batches = self.db.get_all_batches()
-
         base_headers = [
             "ID Партии", "Дата", "Участок",
             config.hmi.passport_fields.get('main_metric_label', 'Масса'),
             config.hmi.target_parameter.get('label', 'Целевой')
         ]
 
-        # Динамические заголовки из статических параметров конфигуратора
         static_keys = [p['key'] for p in config.hmi.static_parameters]
         static_labels = [p['label'] for p in config.hmi.static_parameters]
 
@@ -108,7 +98,6 @@ class KnowledgeBaseScreen(QWidget):
         self.table_batches.setRowCount(0)
 
         unit_filter = self.filter_unit.currentText()
-
         try:
             min_mass = float(self.filter_mass_min.text()) if self.filter_mass_min.text() else 0.0
         except ValueError:
@@ -128,7 +117,6 @@ class KnowledgeBaseScreen(QWidget):
             self.table_batches.setItem(row_idx, 3, QTableWidgetItem(f"{b.get('sample_weight', 0):.1f}"))
             self.table_batches.setItem(row_idx, 4, QTableWidgetItem(f"{b.get('target_metric', 0):.2f}"))
 
-            # Распаковываем статические параметры из JSON
             input_params = {}
             if b.get('input_params'):
                 try:
@@ -143,7 +131,6 @@ class KnowledgeBaseScreen(QWidget):
             row_idx += 1
 
     def on_batch_selected(self):
-        """Динамическая отрисовка нижней таблицы процесса с метками из Конфигуратора"""
         selected = self.table_batches.selectedItems()
         if not selected:
             return
@@ -158,16 +145,11 @@ class KnowledgeBaseScreen(QWidget):
             self.table_process.setColumnCount(0)
             return
 
-        # Получаем актуальные настройки трендов из конфигуратора
+        # Маппинг ключей в русские метки из конфигуратора
         trend_configs = config.hmi.trend_parameters
-
-        # Словарь маппинга системных ключей в русские метки: {'mill_rpm': 'Обороты (об/мин)', ...}
         key_to_label = {p['key']: p.get('label', p['key']) for p in trend_configs}
 
-        # Определяем список колонок для отображения (Время + те тренды, которые есть в конфиге и в данных)
         data_cols = [col for col in df.columns if col != 'timestamp']
-
-        # Формируем список заголовков: сначала Время, затем русские метки (или исходное имя, если в конфиге нет метки)
         headers = ["Время"] + [key_to_label.get(col, col) for col in data_cols]
         cols_order = ['timestamp'] + data_cols
 
@@ -178,7 +160,7 @@ class KnowledgeBaseScreen(QWidget):
             self.table_process.insertRow(i)
             for j, col in enumerate(cols_order):
                 val = row.get(col, '')
-                if isinstance(val, float):
+                if isinstance(val, (int, float)):
                     val = f"{val:.2f}"
                 self.table_process.setItem(i, j, QTableWidgetItem(str(val)))
 

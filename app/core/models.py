@@ -1,12 +1,10 @@
-# app/core/models.py
-import pandas as pd
 import numpy as np
+import pandas as pd
 from typing import Dict, List, Tuple, Optional
-from datetime import datetime
-import logging
 import joblib
-from pathlib import Path
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.linear_model import Ridge
+from sklearn.multioutput import MultiOutputRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.preprocessing import StandardScaler
@@ -19,198 +17,210 @@ from app.utils.config import config
 from app.utils.logger import logger
 
 
-class TemperaturePredictor:
-    """Модель для прогнозирования температурного режима"""
-
-    def __init__(self):
-        self.model = RandomForestRegressor(
-            n_estimators=100,
-            max_depth=10,
-            random_state=42,
-            n_jobs=-1
-        )
+class ProcessPredictor:
+    def __init__(self, algorithm: str = "RandomForest"):
+        self.algorithm = algorithm
+        self.horizon = 10
+        self.window_size = 6
         self.scaler = StandardScaler()
         self.is_trained = False
-        self.model_path = config.base_dir / 'data' / 'models' / 'temperature_model.pkl'
+        self.trained_keys: List[str] = []
+        self.last_mae = 0.0
+        self.last_r2 = 0.0
+
+        self.model = self._build_model(algorithm)
+        self.model_path = config.base_dir / 'data' / 'models' / 'process_model.pkl'
         self.model_path.parent.mkdir(parents=True, exist_ok=True)
 
-    def prepare_training_data(self, batch_id: str = None) -> Tuple[np.ndarray, np.ndarray]:
-        """Подготовка данных для обучения"""
-        db = DatabaseManager()
-
-        if batch_id:
-            # Данные конкретной партии
-            query = f"""
-            SELECT * FROM process_data 
-            WHERE batch_id = '{batch_id}'
-            ORDER BY timestamp
-            """
+    def _build_model(self, algorithm: str):
+        if algorithm == "GradientBoosting":
+            base = GradientBoostingRegressor(n_estimators=80, max_depth=5, random_state=42)
+            return MultiOutputRegressor(base)
+        elif algorithm == "Ridge":
+            return Ridge(alpha=1.0)
         else:
-            # Все успешные партии
-            query = """
-            SELECT p.* FROM process_data p
-            JOIN batches b ON p.batch_id = b.batch_id
-            WHERE b.is_good = 1 AND b.extraction_percent >= 85
-            ORDER BY p.timestamp
-            LIMIT 10000
-            """
+            return RandomForestRegressor(n_estimators=100, max_depth=10, random_state=42, n_jobs=-1)
 
-        df = db.execute_query(query)
-
-        if df.empty:
-            logger.warning("Нет данных для обучения")
+    def prepare_training_data(self, unit_name: Optional[str] = None) -> Tuple[
+        Optional[np.ndarray], Optional[np.ndarray]]:
+        db = DatabaseManager()
+        all_batches = db.get_all_batches()
+        if not all_batches:
             return None, None
 
-        # Признаки: предыдущие значения температуры, подача кислоты, ток
-        features = []
-        targets = []
+        trend_keys = [p['key'] for p in config.hmi.trend_parameters]
+        if not trend_keys:
+            return None, None
 
-        for i in range(6, len(df)):
-            # Целевая переменная - температура в следующий момент времени
-            if i + 1 < len(df):
-                target = df.iloc[i + 1]['temperature_1']
-                if pd.isna(target):
-                    continue
+        self.trained_keys = trend_keys
+        features, targets = [], []
 
-                # Признаки: последние 6 значений
-                window = df.iloc[i - 5:i + 1]
-                feature_row = []
+        for b in all_batches:
+            if unit_name and b.get('unit_name') != unit_name:
+                continue
 
-                for col in ['temperature_1', 'temperature_2', 'temperature_3', 'acid_flow', 'current_value']:
-                    if col in window.columns:
-                        feature_row.extend(window[col].fillna(0).values)
-                    else:
-                        feature_row.extend([0] * 6)
+            df = db.get_process_data(b['batch_id'])
+            if df.empty or len(df) <= self.window_size + self.horizon:
+                continue
 
-                features.append(feature_row)
-                targets.append(target)
+            for k in trend_keys:
+                if k not in df.columns:
+                    df[k] = 0.0
 
-        X = np.array(features)
-        y = np.array(targets)
+            values_matrix = df[trend_keys].fillna(0.0).astype(float).values
 
-        logger.info(f"Подготовлено {len(X)} образцов для обучения")
-        return X, y
+            for i in range(self.window_size - 1, len(values_matrix) - self.horizon):
+                window = values_matrix[i - self.window_size + 1: i + 1]
+                diffs = window[-1] - window[0]
+                feature_vec = np.concatenate([window.flatten(), diffs])
+                target_vec = values_matrix[i + self.horizon]
 
-    def train(self, batch_id: str = None):
-        """Обучение модели"""
+                features.append(feature_vec)
+                targets.append(target_vec)
+
+        if not features:
+            return None, None
+
+        return np.array(features), np.array(targets)
+
+    def train(self, unit_name: Optional[str] = None) -> bool:
         try:
-            X, y = self.prepare_training_data(batch_id)
-
-            if X is None or len(X) < 100:
-                logger.warning("Недостаточно данных для обучения")
+            X, y = self.prepare_training_data(unit_name=unit_name)
+            if X is None or len(X) < 10:
                 return False
 
-            # Разделение на train/test
-            X_train, X_test, y_train, y_test = train_test_split(
-                X, y, test_size=0.2, random_state=42
-            )
-
-            # Масштабирование
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
             X_train_scaled = self.scaler.fit_transform(X_train)
             X_test_scaled = self.scaler.transform(X_test)
 
-            # Обучение
             self.model.fit(X_train_scaled, y_train)
-
-            # Оценка
             y_pred = self.model.predict(X_test_scaled)
-            mae = mean_absolute_error(y_test, y_pred)
-            r2 = r2_score(y_test, y_pred)
 
-            logger.info(f"Модель обучена. MAE: {mae:.2f}, R²: {r2:.3f}")
-
-            # Сохранение модели
-            self.save_model()
+            self.last_mae = float(mean_absolute_error(y_test, y_pred))
+            self.last_r2 = float(r2_score(y_test, y_pred))
             self.is_trained = True
 
+            self.save_model()
             return True
-
         except Exception as e:
-            logger.error(f"Ошибка обучения модели: {e}")
+            logger.error(f"Ошибка при обучении ML-модели: {e}")
             return False
 
-    def predict_temperature(self, recent_data: pd.DataFrame) -> Dict:
-        """Прогноз температуры на следующий шаг"""
-        try:
-            if not self.is_trained:
-                self.load_model()
-                if not self.is_trained:
-                    return {"error": "Модель не обучена"}
+    def predict_and_advise(
+            self,
+            recent_live_df: pd.DataFrame,
+            reference_df: pd.DataFrame,
+            current_minute: int,
+            base_target_metric: float
+    ) -> Dict:
+        trend_params = config.hmi.trend_parameters
+        trend_keys = [p['key'] for p in trend_params]
+        key_to_label = {p['key']: p.get('label', p['key']) for p in trend_params}
+        param_roles = {p['key']: p.get('role', 'state') for p in trend_params}
 
-            # Подготовка последних 6 записей
-            if len(recent_data) < 6:
-                return {"error": "Недостаточно данных для прогноза"}
+        if len(recent_live_df) < self.window_size:
+            return {"ready": False, "status": f"Накопление данных ({len(recent_live_df)}/{self.window_size})..."}
 
-            recent_data = recent_data.tail(6).reset_index(drop=True)
+        if not self.is_trained or self.trained_keys != trend_keys:
+            if not self.load_model() or self.trained_keys != trend_keys:
+                self.train()
 
-            # Формирование признаков
-            feature_row = []
-            for col in ['temperature_1', 'temperature_2', 'temperature_3', 'acid_flow', 'current_value']:
-                if col in recent_data.columns:
-                    feature_row.extend(recent_data[col].fillna(0).values)
-                else:
-                    feature_row.extend([0] * 6)
+        if not self.is_trained:
+            return {"ready": False, "status": "Недостаточно данных для ИИ."}
 
-            X = np.array([feature_row])
-            X_scaled = self.scaler.transform(X)
+        tail_df = recent_live_df.tail(self.window_size).copy()
+        for k in trend_keys:
+            if k not in tail_df.columns:
+                tail_df[k] = 0.0
 
-            # Прогноз
-            prediction = self.model.predict(X_scaled)[0]
+        window = tail_df[trend_keys].fillna(0.0).astype(float).values
+        diffs = window[-1] - window[0]
+        feature_vec = np.concatenate([window.flatten(), diffs])
 
-            # Доверительный интервал (упрощенно)
-            std_dev = np.std([tree.predict(X_scaled)[0] for tree in self.model.estimators_])
+        X_scaled = self.scaler.transform([feature_vec])
+        pred_vec = self.model.predict(X_scaled)[0]
+        predictions_t10 = {k: float(val) for k, val in zip(trend_keys, pred_vec)}
 
-            return {
-                'predicted_temperature': float(prediction),
-                'confidence_interval': [
-                    float(prediction - 1.96 * std_dev),
-                    float(prediction + 1.96 * std_dev)
-                ],
-                'timestamp': datetime.now().isoformat(),
-                'recommendation': self.generate_temperature_recommendation(prediction)
-            }
+        ref_idx = min(current_minute + self.horizon, len(reference_df) - 1)
+        ref_row_t10 = reference_df.iloc[ref_idx].to_dict() if not reference_df.empty else {}
 
-        except Exception as e:
-            logger.error(f"Ошибка прогнозирования: {e}")
-            return {"error": str(e)}
+        ref_curr_idx = min(current_minute, len(reference_df) - 1)
+        ref_curr_row = reference_df.iloc[ref_curr_idx].to_dict() if not reference_df.empty else {}
 
-    def generate_temperature_recommendation(self, predicted_temp: float) -> str:
-        """Генерация рекомендации по температуре"""
-        optimal_range = (85.0, 95.0)  # Оптимальный диапазон
+        advices = []
+        total_rel_deviation = 0.0
+        active_trends_count = 0
 
-        if predicted_temp < optimal_range[0]:
-            return f"Температура низкая ({predicted_temp:.1f}°C). Рекомендуется увеличить нагрев."
-        elif predicted_temp > optimal_range[1]:
-            return f"Температура высокая ({predicted_temp:.1f}°C). Рекомендуется снизить нагрев."
-        else:
-            return f"Температура в оптимальном диапазоне ({predicted_temp:.1f}°C). Продолжайте текущий режим."
+        for k in trend_keys:
+            pred_val = predictions_t10[k]
+            ref_val = float(ref_row_t10.get(k, 0.0))
+            ref_curr_val = float(ref_curr_row.get(k, 0.0))
+            role = param_roles.get(k, 'state')
+
+            if abs(ref_val) < 1e-4 and abs(pred_val) < 1e-4:
+                continue
+
+            active_trends_count += 1
+            diff = pred_val - ref_val
+            rel_dev = abs(diff) / (abs(ref_val) if abs(ref_val) > 1.0 else 1.0)
+            total_rel_deviation += rel_dev
+
+            step_change = ref_val - ref_curr_val
+            is_upcoming_step = abs(step_change) > 2.0
+
+            # Советы генерируем только для управляющих параметров (control)
+            if role == 'control':
+                if is_upcoming_step:
+                    action = "УВЕЛИЧИТЬ" if step_change > 0 else "СНИЗИТЬ"
+                    advices.append(
+                        f"• <b>[ПЛАНОВО] {key_to_label[k]}</b>: смена режима → {action} до <b>{ref_val:.1f}</b>")
+                elif rel_dev > 0.06 and abs(diff) > 1.0:
+                    action = "снизить" if diff > 0 else "увеличить"
+                    advices.append(
+                        f"• <b>[УПРАВЛЕНИЕ] {key_to_label[k]}</b>: прогноз {pred_val:.1f} → {action.upper()}!")
+
+        avg_dev = (total_rel_deviation / active_trends_count) if active_trends_count > 0 else 0.0
+        penalty = min(20.0, avg_dev * 25.0)
+        estimated_target = max(0.0, base_target_metric - penalty)
+
+        return {
+            "ready": True,
+            "predictions_t10": predictions_t10,
+            "ref_t10": ref_row_t10,
+            "estimated_target": estimated_target,
+            "base_target": base_target_metric,
+            "advices": advices,
+            "r2": self.last_r2,
+            "mae": self.last_mae,
+            "algorithm": self.algorithm
+        }
 
     def save_model(self):
-        """Сохранение модели в файл"""
         try:
-            model_data = {
+            joblib.dump({
                 'model': self.model,
                 'scaler': self.scaler,
-                'is_trained': self.is_trained
-            }
-            joblib.dump(model_data, self.model_path)
-            logger.info(f"Модель сохранена: {self.model_path}")
+                'is_trained': self.is_trained,
+                'trained_keys': self.trained_keys,
+                'last_mae': self.last_mae,
+                'last_r2': self.last_r2,
+                'algorithm': self.algorithm
+            }, self.model_path)
         except Exception as e:
             logger.error(f"Ошибка сохранения модели: {e}")
 
-    def load_model(self):
-        """Загрузка модели из файла"""
+    def load_model(self) -> bool:
         try:
             if self.model_path.exists():
-                model_data = joblib.load(self.model_path)
-                self.model = model_data['model']
-                self.scaler = model_data['scaler']
-                self.is_trained = model_data['is_trained']
-                logger.info(f"Модель загружена: {self.model_path}")
+                data = joblib.load(self.model_path)
+                self.model = data['model']
+                self.scaler = data['scaler']
+                self.is_trained = data['is_trained']
+                self.trained_keys = data.get('trained_keys', [])
+                self.last_mae = data.get('last_mae', 0.0)
+                self.last_r2 = data.get('last_r2', 0.0)
+                self.algorithm = data.get('algorithm', 'RandomForest')
                 return True
-            else:
-                logger.warning("Файл модели не найден")
-                return False
         except Exception as e:
             logger.error(f"Ошибка загрузки модели: {e}")
-            return False
+        return False

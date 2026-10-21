@@ -1,21 +1,17 @@
-# app/gui/config_screen.py
 import yaml
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QGroupBox, QGridLayout, QMessageBox, QScrollArea
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
+    QGroupBox, QGridLayout, QMessageBox, QScrollArea, QComboBox
 )
 from PyQt5.QtCore import Qt
 from app.utils.config import config
 
-
 def generate_key_from_label(label: str) -> str:
     """Автоматическая генерация системного ключа из русской метки (транслитерация + snake_case)"""
     translit_map = {
-        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e',
-        'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
-        'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
-        'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
-        'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y',
+        'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f',
+        'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'
     }
     label_lower = label.lower().strip()
     result = []
@@ -26,17 +22,13 @@ def generate_key_from_label(label: str) -> str:
             result.append(char)
         elif char in (' ', '_', '-'):
             result.append('_')
-
     key = "".join(result)
     while '__' in key:
         key = key.replace('__', '_')
-    key = key.strip('_')
-    return key or "param"
-
+    return key.strip('_') or "param"
 
 class ConfigScreen(QWidget):
     """Экран встроенного конфигуратора технологического процесса"""
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.init_ui()
@@ -74,7 +66,7 @@ class ConfigScreen(QWidget):
         group_general.setLayout(grid_general)
         layout.addWidget(group_general)
 
-        # --- 2. СТАТИЧЕСКИЕ ПАРАМЕТРЫ СЫРЬЯ (Для поиска эталона) ---
+        # --- 2. СТАТИЧЕСКИЕ ПАРАМЕТРЫ СЫРЬЯ ---
         group_static = QGroupBox("2. Параметры сырья (Ввод оператора / Статика)")
         self.layout_static = QVBoxLayout()
         self.static_widgets = []
@@ -89,16 +81,22 @@ class ConfigScreen(QWidget):
         group_static.setLayout(self.layout_static)
         layout.addWidget(group_static)
 
-        # --- 3. ДИНАМИЧЕСКИЕ ТРЕНДЫ (Датчики процесса) ---
+        # --- 3. ДИНАМИЧЕСКИЕ ТРЕНДЫ (Датчики процесса с ролями) ---
         group_trends = QGroupBox("3. Параметры технологического процесса (Тренды датчиков)")
         self.layout_trends = QVBoxLayout()
         self.trend_widgets = []
 
         for param in config.hmi.trend_parameters:
-            self.add_trend_row(param.get('key', ''), param.get('label', ''), param.get('color', '#000000'))
+            self.add_trend_row(
+                param.get('key', ''),
+                param.get('label', ''),
+                param.get('color', '#000000'),
+                param.get('role', 'control'),
+                param.get('plc_tag', '')
+            )
 
         btn_add_trend = QPushButton("＋ Добавить тренд датчика")
-        btn_add_trend.clicked.connect(lambda: self.add_trend_row("", "", "#000000"))
+        btn_add_trend.clicked.connect(lambda: self.add_trend_row("", "", "#000000", "control", ""))
 
         self.layout_trends.addWidget(btn_add_trend)
         group_trends.setLayout(self.layout_trends)
@@ -107,27 +105,21 @@ class ConfigScreen(QWidget):
         scroll.setWidget(content)
         main_layout.addWidget(scroll)
 
-        # Кнопка сохранения
         self.btn_save = QPushButton("💾 СОХРАНИТЬ КОНФИГУРАЦИЮ И ПЕРЕЗАГРУЗИТЬ")
         self.btn_save.setFixedHeight(50)
-        self.btn_save.setStyleSheet(
-            "background-color: #2E7D32; color: white; font-size: 11pt; font-weight: bold; border-radius: 5px;")
+        self.btn_save.setStyleSheet("background-color: #2E7D32; color: white; font-size: 11pt; font-weight: bold; border-radius: 5px;")
         self.btn_save.clicked.connect(self.save_config)
         main_layout.addWidget(self.btn_save)
 
     def add_static_row(self, key, label, default):
         h_layout = QHBoxLayout()
-
         e_label = QLineEdit(label)
-        e_label.setPlaceholderText("Метка на экране (например Ni (%))")
+        e_label.setPlaceholderText("Метка (например Ni (%))")
 
-        # Ключ генерируется автоматически и защищен от ручного изменения
         e_key = QLineEdit(key or generate_key_from_label(label))
         e_key.setReadOnly(True)
         e_key.setStyleSheet("background-color: #ECEFF1; color: #37474F;")
         e_key.setFixedWidth(120)
-
-        # Динамическое обновление ключа при изменении метки
         e_label.textChanged.connect(lambda text: e_key.setText(generate_key_from_label(text)))
 
         e_def = QLineEdit(str(default))
@@ -139,7 +131,7 @@ class ConfigScreen(QWidget):
 
         h_layout.addWidget(QLabel("Метка:"))
         h_layout.addWidget(e_label)
-        h_layout.addWidget(QLabel("Ключ (авто):"))
+        h_layout.addWidget(QLabel("Ключ:"))
         h_layout.addWidget(e_key)
         h_layout.addWidget(QLabel("Дефолт:"))
         h_layout.addWidget(e_def)
@@ -148,53 +140,52 @@ class ConfigScreen(QWidget):
         container = QWidget()
         container.setLayout(h_layout)
         self.static_widgets.append((container, e_key, e_label, e_def))
-
-        def remove_row():
-            container.setParent(None)
-            self.static_widgets.remove((container, e_key, e_label, e_def))
-
-        btn_del.clicked.connect(remove_row)
-
+        btn_del.clicked.connect(lambda: (container.setParent(None), self.static_widgets.remove((container, e_key, e_label, e_def))))
         self.layout_static.insertWidget(self.layout_static.count() - 1, container)
 
-    def add_trend_row(self, key, label, color):
+    def add_trend_row(self, key, label, color, role="control", plc_tag=""):
         h_layout = QHBoxLayout()
-
         e_label = QLineEdit(label)
-        e_label.setPlaceholderText("Метка графика (Т раствора)")
+        e_label.setPlaceholderText("Метка (Обороты)")
 
         e_key = QLineEdit(key or generate_key_from_label(label))
         e_key.setReadOnly(True)
         e_key.setStyleSheet("background-color: #ECEFF1; color: #37474F;")
-        e_key.setFixedWidth(120)
-
+        e_key.setFixedWidth(100)
         e_label.textChanged.connect(lambda text: e_key.setText(generate_key_from_label(text)))
 
         e_color = QLineEdit(color)
-        e_color.setPlaceholderText("Цвет (#FF5252)")
-        e_color.setFixedWidth(90)
+        e_color.setPlaceholderText("#FF5252")
+        e_color.setFixedWidth(70)
+
+        combo_role = QComboBox()
+        combo_role.addItems(["control", "state"])
+        combo_role.setCurrentText(role)
+        combo_role.setFixedWidth(90)
+
+        e_tag = QLineEdit(str(plc_tag))
+        e_tag.setPlaceholderText("Тег/Регистр")
+        e_tag.setFixedWidth(100)
 
         btn_del = QPushButton("❌")
-        btn_del.setFixedWidth(40)
+        btn_del.setFixedWidth(35)
 
         h_layout.addWidget(QLabel("Метка:"))
         h_layout.addWidget(e_label)
-        h_layout.addWidget(QLabel("Ключ (авто):"))
+        h_layout.addWidget(QLabel("Ключ:"))
         h_layout.addWidget(e_key)
         h_layout.addWidget(QLabel("Цвет:"))
         h_layout.addWidget(e_color)
+        h_layout.addWidget(QLabel("Роль:"))
+        h_layout.addWidget(combo_role)
+        h_layout.addWidget(QLabel("Тег:"))
+        h_layout.addWidget(e_tag)
         h_layout.addWidget(btn_del)
 
         container = QWidget()
         container.setLayout(h_layout)
-        self.trend_widgets.append((container, e_key, e_label, e_color))
-
-        def remove_row():
-            container.setParent(None)
-            self.trend_widgets.remove((container, e_key, e_label, e_color))
-
-        btn_del.clicked.connect(remove_row)
-
+        self.trend_widgets.append((container, e_key, e_label, e_color, combo_role, e_tag))
+        btn_del.clicked.connect(lambda: (container.setParent(None), self.trend_widgets.remove((container, e_key, e_label, e_color, combo_role, e_tag))))
         self.layout_trends.insertWidget(self.layout_trends.count() - 1, container)
 
     def save_config(self):
@@ -214,27 +205,25 @@ class ConfigScreen(QWidget):
                 })
 
             trend_params = []
-            for _, k, l, c in self.trend_widgets:
+            for _, k, l, c, r, tag in self.trend_widgets:
                 key_val = k.text().strip()
                 label_val = l.text().strip()
                 if not label_val: continue
                 trend_params.append({
                     'key': key_val or generate_key_from_label(label_val),
                     'label': label_val,
-                    'color': c.text().strip() or '#000000'
+                    'color': c.text().strip() or '#000000',
+                    'role': r.currentText(),  # Сохраняем выбранную роль!
+                    'plc_tag': tag.text().strip()
                 })
 
-            # Обновляем объект конфига
             config.hmi.units = units
             config.hmi.passport_fields['main_metric_label'] = self.edit_main_label.text().strip()
             config.hmi.target_parameter['label'] = self.edit_target_label.text().strip()
             config.hmi.static_parameters = static_params
             config.hmi.trend_parameters = trend_params
 
-            # Сохраняем в файл config.yaml
             config.save_to_file()
-
-            QMessageBox.information(self, "Успех",
-                                    "Конфигурация успешно сохранена! Перезапустите приложение для применения изменений на всех вкладках.")
+            QMessageBox.information(self, "Успех", "Конфигурация успешно сохранена! Перезапустите приложение.")
         except Exception as e:
             QMessageBox.critical(self, "Ошибка сохранения", str(e))

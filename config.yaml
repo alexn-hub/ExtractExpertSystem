@@ -1,10 +1,11 @@
 database:
-  database: production_db
-  host: localhost
+  database: acdb
+  db_type: PostgreSQL
+  host: 192.168.222.34
   local_db_path: data/database.db
-  password: ''
-  port: 3306
-  username: operator
+  password: Dwd#RX9R
+  port: 5432
+  username: NR-ZF-analitic_s
 hmi:
   passport_fields:
     default_main_metric: 100.0
@@ -12,11 +13,11 @@ hmi:
     main_metric_label: Масса руды (т)
   static_parameters:
   - default: 12.0
-    key: ore_hardness
+    key: tverdost_rudy_ed
     label: Твердость руды (Ед)
   - default: 30.0
-    key: fraction_size
-    label: КРУП!!! (мм)
+    key: krupnost_mm
+    label: Крупность (мм)
   target_parameter:
     default: 85.0
     key: target_metric
@@ -27,15 +28,33 @@ hmi:
   - color: '#FF5252'
     key: mill_rpm
     label: Обороты (об/мин)
+    plc_tag: ''
+    role: control
   - color: '#448AFF'
     key: water_flow
-    label: Вода (м3/ч)
+    label: Расход воды (м3/ч)
+    plc_tag: ''
+    role: control
+  - color: '#1E88E5'
+    key: reagent_flow
+    label: Расход реагента (л/ч)
+    plc_tag: ''
+    role: control
   - color: '#2E7D32'
     key: power_kw
     label: Мощность (кВт)
-  - color: '#000000'
-    key: zhopa
-    label: ЖОПА!!!
+    plc_tag: ''
+    role: state
+  - color: '#00897B'
+    key: pulp_density
+    label: Плотность пульпы (%)
+    plc_tag: ''
+    role: state
+  - color: '#6D4C41'
+    key: temperature
+    label: Температура (°C)
+    plc_tag: ''
+    role: state
   units:
   - Участок измельчения 1
   - Участок измельчения 2
@@ -44,6 +63,15 @@ model:
   n_neighbors: 5
   random_state: 42
   similarity_threshold: 0.75
+plc:
+  modbus_host: 127.0.0.1
+  modbus_port: 502
+  modbus_unit_id: 1
+  opc_password: ''
+  opc_url: opc.tcp://127.0.0.1:4840
+  opc_user: ''
+  polling_interval_ms: 1000
+  protocol: Simulation
 process:
   max_jump_delta: 50.0
   missing_data: interpolate
