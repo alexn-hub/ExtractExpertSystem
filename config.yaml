@@ -33,12 +33,12 @@ hmi:
   - color: '#448AFF'
     key: water_flow
     label: Расход воды (м3/ч)
-    plc_tag: ''
+    plc_tag: '40001'
     role: control
   - color: '#1E88E5'
     key: reagent_flow
     label: Расход реагента (л/ч)
-    plc_tag: ''
+    plc_tag: '40004'
     role: control
   - color: '#2E7D32'
     key: power_kw
@@ -55,10 +55,43 @@ hmi:
     label: Температура (°C)
     plc_tag: ''
     role: state
+  - color: '#FF55FF'
+    key: parametr_1
+    label: Параметр 1
+    plc_tag: ''
+    role: state
+  - color: '#FF5EAC'
+    key: parametr_2
+    label: Параметр 2
+    plc_tag: ''
+    role: state
+  - color: '#448AFF'
+    key: parametr_3
+    label: Параметр 3
+    plc_tag: ''
+    role: state
+  - color: '#448AFF'
+    key: parametr_4
+    label: Параметр 4
+    plc_tag: ''
+    role: control
+  - color: '#FF0000'
+    key: parametr_5
+    label: Параметр 5
+    plc_tag: ''
+    role: control
+  - color: '#448AFF'
+    key: parametr_6
+    label: Параметр 6
+    plc_tag: ''
+    role: control
   units:
   - Участок измельчения 1
   - Участок измельчения 2
   - СФР-3
+  - ТЕСТ1
+  - ТЕСТ2
+  - ТТТТТЕСТ3
 model:
   n_neighbors: 5
   random_state: 42
@@ -71,7 +104,7 @@ plc:
   opc_url: opc.tcp://127.0.0.1:4840
   opc_user: ''
   polling_interval_ms: 1000
-  protocol: Simulation
+  protocol: OPC UA
 process:
   max_jump_delta: 50.0
   missing_data: interpolate

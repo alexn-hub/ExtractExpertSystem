@@ -17,33 +17,36 @@ class InputScreen(QWidget):
 
     def init_ui(self):
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(40, 40, 40, 40)
-        layout.setSpacing(15)
+        layout.setContentsMargins(30, 25, 30, 25)
+        layout.setSpacing(12)
 
-        title = QLabel(f"Ввод параметров партии: {self.unit_name}")
-        title.setStyleSheet("font-size: 16pt; font-weight: bold; color: #263238;")
+        title = QLabel(f"ВВОД ПАРАМЕТРОВ ПАРТИИ: {self.unit_name.upper()}")
+        title.setStyleSheet("font-size: 13pt; font-weight: bold; color: #7EA6CD;")
         title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
 
-        # Общая информация
-        form_group = QGroupBox("Общие параметры")
+        # 1. Общая информация
+        form_group = QGroupBox("Общие параметры партии")
         form_layout = QGridLayout()
+        form_layout.setSpacing(8)
 
         passport_cfg = config.hmi.passport_fields
         form_layout.addWidget(QLabel("ID Партии:"), 0, 0)
         self.edit_batch_id = QLineEdit(passport_cfg.get('id_placeholder', 'P-2026-001'))
         form_layout.addWidget(self.edit_batch_id, 0, 1)
 
-        form_layout.addWidget(QLabel(passport_cfg.get('main_metric_label', 'Масса (кг):')), 1, 0)
+        main_label = passport_cfg.get('main_metric_label', 'Масса (кг)')
+        form_layout.addWidget(QLabel(f"{main_label}:"), 1, 0)
         self.edit_weight = QLineEdit(str(passport_cfg.get('default_main_metric', '1000.0')))
         form_layout.addWidget(self.edit_weight, 1, 1)
 
         form_group.setLayout(form_layout)
         layout.addWidget(form_group)
 
-        # Динамические параметры сырья (из конфига)
-        params_group = QGroupBox("Свойства сырья / Химический состав")
+        # 2. Динамические параметры сырья (из конфига)
+        params_group = QGroupBox("Свойства сырья (Паспорт партии / Статика)")
         params_layout = QGridLayout()
+        params_layout.setSpacing(8)
         self.dynamic_inputs = {}
 
         for i, param in enumerate(config.hmi.static_parameters):
@@ -59,19 +62,10 @@ class InputScreen(QWidget):
         params_group.setLayout(params_layout)
         layout.addWidget(params_group)
 
-        # Кнопка подтверждения
-        self.btn_start = QPushButton("Подтвердить данные партии")
-        self.btn_start.setMinimumHeight(55)
-        self.btn_start.setStyleSheet("""
-            QPushButton {
-                background-color: #2E7D32;
-                color: white;
-                font-size: 13pt;
-                font-weight: bold;
-                border-radius: 5px;
-            }
-            QPushButton:hover { background-color: #388E3C; }
-        """)
+        # 3. Кнопка подтверждения (стили подтягиваются из styles.qss через btn_run)
+        self.btn_start = QPushButton("ПОДТВЕРДИТЬ ДАННЫЕ ПАРТИИ")
+        self.btn_start.setObjectName("btn_run")
+        self.btn_start.setFixedHeight(40)
         layout.addWidget(self.btn_start)
         layout.addStretch()
 
@@ -85,7 +79,7 @@ class InputScreen(QWidget):
         try:
             weight = clean_float(self.edit_weight.text())
             if weight is None:
-                raise ValueError("Поле главного параметра (массы) заполнено неверно!")
+                raise ValueError("Поле главного показателя заполнено неверно!")
 
             batch_id = self.edit_batch_id.text().strip()
             if not batch_id:
@@ -97,7 +91,6 @@ class InputScreen(QWidget):
                 'sample_weight': weight,
             }
 
-            # Считываем статические параметры из динамических полей ввода
             for param in config.hmi.static_parameters:
                 key = param['key']
                 val = clean_float(self.dynamic_inputs[key].text())

@@ -19,21 +19,27 @@ class ImportDataDialog(QDialog):
         self.filepath = ""
         self.loaded_df = None
         self.combos = {}
-        self.setWindowTitle("Импорт новой партии в Базу Знаний")
-        self.setMinimumWidth(880)
-        self.setMinimumHeight(700)
+        self.setWindowTitle("ИМПОРТ НОВОЙ ПАРТИИ В БАЗУ ЗНАНИЙ")
+        self.setMinimumWidth(860)
+        self.setMinimumHeight(680)
         self.init_ui()
 
     def init_ui(self):
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(12, 12, 12, 12)
+        layout.setSpacing(10)
+
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         content_widget = QWidget()
         scroll_layout = QVBoxLayout(content_widget)
+        scroll_layout.setContentsMargins(6, 6, 6, 6)
+        scroll_layout.setSpacing(10)
 
         # 1. Паспорт партии (Общие данные)
         batch_group = QGroupBox("1. Параметры партии (Паспорт)")
         grid_main = QGridLayout()
+        grid_main.setSpacing(6)
 
         self.edit_id = QLineEdit()
         self.edit_id.setPlaceholderText(config.hmi.passport_fields.get('id_placeholder', 'P-2026-001'))
@@ -52,9 +58,9 @@ class ImportDataDialog(QDialog):
         grid_main.addWidget(QLabel("Участок / Аппарат:"), 0, 2)
         grid_main.addWidget(self.edit_unit, 0, 3)
 
-        grid_main.addWidget(QLabel(config.hmi.passport_fields.get('main_metric_label', 'Масса:')), 1, 0)
+        grid_main.addWidget(QLabel(f"{config.hmi.passport_fields.get('main_metric_label', 'Масса')}:"), 1, 0)
         grid_main.addWidget(self.edit_mass, 1, 1)
-        grid_main.addWidget(QLabel(config.hmi.target_parameter.get('label', 'Целевой показатель (%):')), 1, 2)
+        grid_main.addWidget(QLabel(f"{config.hmi.target_parameter.get('label', 'Целевой показатель')}:"), 1, 2)
         grid_main.addWidget(self.edit_ext, 1, 3)
 
         batch_group.setLayout(grid_main)
@@ -63,6 +69,7 @@ class ImportDataDialog(QDialog):
         # 2. Статические параметры сырья (из конфигуратора)
         chem_group = QGroupBox("2. Свойства сырья (Статика)")
         grid_chem = QGridLayout()
+        grid_chem.setSpacing(6)
         self.chem_inputs = {}
 
         for i, param in enumerate(config.hmi.static_parameters):
@@ -81,10 +88,11 @@ class ImportDataDialog(QDialog):
         # 3. Выбор источника процессных данных (Файл или Внешняя SQL БД)
         source_group = QGroupBox("3. Источник процессных данных (Архив трендов)")
         source_vbox = QVBoxLayout()
+        source_vbox.setSpacing(8)
 
         radio_layout = QHBoxLayout()
-        self.rb_file = QRadioButton("📁 Из файла (Excel / CSV)")
-        self.rb_sql = QRadioButton(f"🗄️ Из внешней СУБД ({getattr(config.db, 'db_type', 'SQL')}: {config.db.host})")
+        self.rb_file = QRadioButton("Из файла (Excel / CSV)")
+        self.rb_sql = QRadioButton(f"Из внешней СУБД ({getattr(config.db, 'db_type', 'SQL')}: {config.db.host})")
         self.rb_file.setChecked(True)
         self.rb_file.toggled.connect(self.on_source_toggled)
         radio_layout.addWidget(self.rb_file)
@@ -97,39 +105,46 @@ class ImportDataDialog(QDialog):
         # Страница 0: Файловый импорт
         page_file = QWidget()
         file_layout = QHBoxLayout(page_file)
-        file_layout.setContentsMargins(0, 5, 0, 0)
+        file_layout.setContentsMargins(0, 4, 0, 0)
         self.lbl_file = QLabel("Файл не выбран")
-        btn_select = QPushButton("📁 Выбрать Excel / CSV")
+        self.lbl_file.setStyleSheet("color: #8A99AD;")
+        btn_select = QPushButton("ВЫБРАТЬ EXCEL / CSV")
+        btn_select.setObjectName("btn_import")
+        btn_select.setFixedHeight(28)
         btn_select.clicked.connect(self.select_file)
-        file_layout.addWidget(self.lbl_file)
+        file_layout.addWidget(self.lbl_file, stretch=1)
         file_layout.addWidget(btn_select)
         self.source_stack.addWidget(page_file)
 
         # Страница 1: SQL импорт
         page_sql = QWidget()
         sql_grid = QGridLayout(page_sql)
-        sql_grid.setContentsMargins(0, 5, 0, 0)
+        sql_grid.setContentsMargins(0, 4, 0, 0)
+        sql_grid.setSpacing(6)
 
         self.combo_sql_tables = QComboBox()
         self.combo_sql_tables.setEditable(True)
         self.combo_sql_tables.setPlaceholderText("Имя таблицы (например process_history)")
 
-        btn_fetch_tables = QPushButton("🔄 Список таблиц из БД")
+        btn_fetch_tables = QPushButton("СПИСОК ТАБЛИЦ")
+        btn_fetch_tables.setObjectName("btn_new_batch")
+        btn_fetch_tables.setFixedHeight(28)
         btn_fetch_tables.clicked.connect(self.load_sql_tables)
 
         self.edit_sql_query = QLineEdit()
         self.edit_sql_query.setPlaceholderText(
-            "Или введите свой SQL-запрос (например: SELECT * FROM process_history WHERE batch_id = '101')"
+            "Или SQL-запрос (например: SELECT * FROM process_history WHERE batch_id = '101')"
         )
 
-        btn_load_sql_cols = QPushButton("📥 Загрузить данные и колонки из SQL")
-        btn_load_sql_cols.setStyleSheet("background-color: #1565C0; color: white; font-weight: bold; padding: 6px;")
+        btn_load_sql_cols = QPushButton("ЗАГРУЗИТЬ ДАННЫЕ И КОЛОНКИ ИЗ SQL")
+        btn_load_sql_cols.setObjectName("btn_import")
+        btn_load_sql_cols.setFixedHeight(30)
         btn_load_sql_cols.clicked.connect(self.load_from_sql)
 
         sql_grid.addWidget(QLabel("Таблица в БД:"), 0, 0)
         sql_grid.addWidget(self.combo_sql_tables, 0, 1)
         sql_grid.addWidget(btn_fetch_tables, 0, 2)
-        sql_grid.addWidget(QLabel("SQL-запрос (опц.):"), 1, 0)
+        sql_grid.addWidget(QLabel("SQL-запрос:"), 1, 0)
         sql_grid.addWidget(self.edit_sql_query, 1, 1, 1, 2)
         sql_grid.addWidget(btn_load_sql_cols, 2, 0, 1, 3)
 
@@ -139,8 +154,9 @@ class ImportDataDialog(QDialog):
         scroll_layout.addWidget(source_group)
 
         # 4. Маппинг колонок (единый и для файла, и для SQL)
-        self.mapping_group = QGroupBox("4. Сопоставление колонок техпроцесса (из Конфигуратора)")
+        self.mapping_group = QGroupBox("4. Сопоставление колонок техпроцесса")
         self.mapping_grid = QGridLayout()
+        self.mapping_grid.setSpacing(6)
         self.mapping_group.setLayout(self.mapping_grid)
         self.mapping_group.hide()
         scroll_layout.addWidget(self.mapping_group)
@@ -150,9 +166,9 @@ class ImportDataDialog(QDialog):
         layout.addWidget(scroll)
 
         # Кнопка сохранения
-        self.btn_save = QPushButton("✅ ЗАГРУЗИТЬ ПАРТИЮ В ЛОКАЛЬНУЮ БАЗУ ЗНАНИЙ")
-        self.btn_save.setFixedHeight(50)
-        self.btn_save.setStyleSheet("background-color: #2E7D32; color: white; font-weight: bold; font-size: 11pt;")
+        self.btn_save = QPushButton("ЗАГРУЗИТЬ ПАРТИЮ В ЛОКАЛЬНУЮ БАЗУ ЗНАНИЙ")
+        self.btn_save.setObjectName("btn_save")
+        self.btn_save.setFixedHeight(38)
         self.btn_save.clicked.connect(self.save_data)
         self.btn_save.setEnabled(False)
         layout.addWidget(self.btn_save)
@@ -210,13 +226,13 @@ class ImportDataDialog(QDialog):
             self.setup_mapping_ui(self.loaded_df.columns.tolist())
             QMessageBox.information(
                 self, "Данные получены",
-                f"Из внешней СУБД загружено {len(self.loaded_df)} строк.\nСопоставьте колонки ниже и нажмите 'Загрузить'."
+                f"Из внешней СУБД загружено {len(self.loaded_df)} строк.\nСопоставьте колонки ниже и подтвердите импорт."
             )
         except Exception as e:
             QMessageBox.critical(self, "Ошибка SQL", f"Не удалось загрузить данные из внешней БД:\n{e}")
 
     def setup_mapping_ui(self, columns):
-        """Динамическое построение полей маппинга строго под тренды из конфигуратора"""
+        """Динамическое построение полей маппинга под тренды из конфигуратора"""
         for i in reversed(range(self.mapping_grid.count())):
             item = self.mapping_grid.itemAt(i)
             if item and item.widget():
@@ -239,7 +255,9 @@ class ImportDataDialog(QDialog):
                     combo.setCurrentText(col_str)
                     break
 
-            self.mapping_grid.addWidget(QLabel(f"<b>{label}</b>:"), i, 0)
+            lbl = QLabel(f"{label}:")
+            lbl.setStyleSheet("color: #BAC7D5; font-weight: bold;")
+            self.mapping_grid.addWidget(lbl, i, 0)
             self.mapping_grid.addWidget(combo, i, 1)
             self.combos[key] = combo
 
